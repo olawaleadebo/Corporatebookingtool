@@ -1,41 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
-import { Plane, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Plane } from 'lucide-react';
 import { authService } from '../../services/auth.service';
 import { toast } from 'sonner';
-import api from '../../lib/api';
-import { BackendOfflineAlert } from '../components/BackendOfflineAlert';
-import { API_CONFIG } from '../../config/api.config';
-import { ConnectionDiagnostics } from '../components/ConnectionDiagnostics';
-import { BackendSetupGuide } from '../components/BackendSetupGuide';
-import { QuickConnectionTest } from '../components/QuickConnectionTest';
-import { CorsDebugPanel } from '../components/CorsDebugPanel';
-import { RestartBanner } from '../components/RestartBanner';
 
 export function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [backendStatus, setBackendStatus] = useState<'checking' | 'online' | 'offline'>('checking');
-
-  useEffect(() => {
-    checkBackendConnection();
-  }, []);
-
-  const checkBackendConnection = async () => {
-    try {
-      await api.get('/health');
-      setBackendStatus('online');
-    } catch (error) {
-      // Silently set offline status - no console errors
-      setBackendStatus('offline');
-    }
-  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,20 +22,10 @@ export function Login() {
       return;
     }
 
-    if (backendStatus === 'offline') {
-      toast.error('Backend server is offline. Please start the backend first.');
-      return;
-    }
-
     setIsLoading(true);
 
     try {
-      console.log('🔐 Attempting login with:', { email, password: '***' });
-      console.log('🌐 API Base URL:', API_CONFIG.API_BASE_URL);
-      
       const { user } = await authService.login({ email, password });
-      
-      console.log('✅ Login successful:', user);
       toast.success(`Welcome back, ${user.firstName}!`);
 
       // Redirect based on role
@@ -72,18 +39,8 @@ export function Login() {
         navigate('/traveller');
       }
     } catch (error: any) {
-      console.error('❌ Login failed:', error);
-      console.error('❌ Error response:', error.response?.data);
-      console.error('❌ Error status:', error.response?.status);
-      console.error('❌ Error message:', error.message);
-      
-      if (error.code === 'ERR_NETWORK') {
-        toast.error('Cannot connect to backend server. Please ensure it is running.');
-        setBackendStatus('offline');
-      } else {
-        const message = error.response?.data?.message || error.message || 'Login failed. Please check your credentials.';
-        toast.error(Array.isArray(message) ? message.join(', ') : message);
-      }
+      const message = error.response?.data?.message || error.message || 'Login failed. Please check your credentials.';
+      toast.error(Array.isArray(message) ? message.join(', ') : message);
     } finally {
       setIsLoading(false);
     }
@@ -91,11 +48,6 @@ export function Login() {
 
   // Demo login function for testing
   const handleDemoLogin = (role: 'traveller' | 'arranger' | 'admin') => {
-    if (backendStatus === 'offline') {
-      toast.error('Backend server is offline. Please start the backend first.');
-      return;
-    }
-
     const demoCredentials: Record<string, { email: string; password: string }> = {
       traveller: { email: 'traveller@test.com', password: 'Test123!' },
       arranger: { email: 'arranger@test.com', password: 'Test123!' },
@@ -135,15 +87,6 @@ export function Login() {
           <p className="text-white/90 text-lg drop-shadow">Corporate Booking Tool</p>
         </div>
 
-        {/* Restart Reminder Banner */}
-        <RestartBanner />
-
-        {/* Quick Connection Test */}
-        <div className="mb-4 space-y-3">
-          <QuickConnectionTest />
-          <CorsDebugPanel />
-        </div>
-
         {/* Login Card */}
         <Card className="border-gray-200 bg-white shadow-2xl">
           <CardHeader>
@@ -153,11 +96,6 @@ export function Login() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Backend Offline Alert */}
-            {backendStatus === 'offline' && (
-              <BackendOfflineAlert onRetry={checkBackendConnection} />
-            )}
-
             <div className="space-y-2">
               <Label htmlFor="email" className="text-gray-700">Email</Label>
               <Input
@@ -185,7 +123,7 @@ export function Login() {
               <Button
                 onClick={handleLogin}
                 className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold"
-                disabled={isLoading || backendStatus === 'offline'}
+                disabled={isLoading}
               >
                 {isLoading ? 'Logging in...' : 'Login'}
               </Button>
@@ -193,7 +131,7 @@ export function Login() {
                 onClick={() => handleDemoLogin('traveller')}
                 variant="outline"
                 className="w-full border-gray-300 text-gray-700 hover:bg-gray-100 bg-white"
-                disabled={isLoading || backendStatus === 'offline'}
+                disabled={isLoading}
               >
                 Demo Login as Traveller
               </Button>
@@ -201,7 +139,7 @@ export function Login() {
                 onClick={() => handleDemoLogin('arranger')}
                 variant="outline"
                 className="w-full border-gray-300 text-gray-700 hover:bg-gray-100 bg-white"
-                disabled={isLoading || backendStatus === 'offline'}
+                disabled={isLoading}
               >
                 Demo Login as Travel Arranger
               </Button>
@@ -209,7 +147,7 @@ export function Login() {
                 onClick={() => handleDemoLogin('admin')}
                 variant="outline"
                 className="w-full border-gray-300 text-gray-700 hover:bg-gray-100 bg-white"
-                disabled={isLoading || backendStatus === 'offline'}
+                disabled={isLoading}
               >
                 Demo Login as Admin
               </Button>
@@ -219,66 +157,22 @@ export function Login() {
               Enter credentials or use demo login
             </div>
 
-            {/* Backend Status Indicator */}
-            <div className="flex items-center justify-center gap-2 pt-2">
-              {backendStatus === 'checking' && (
-                <>
-                  <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
-                  <span className="text-xs text-gray-500">Checking backend...</span>
-                </>
-              )}
-              {backendStatus === 'online' && (
-                <>
-                  <CheckCircle2 className="w-4 h-4 text-green-500" />
-                  <span className="text-xs text-green-600">Backend connected</span>
-                </>
-              )}
-              {backendStatus === 'offline' && (
-                <>
-                  <AlertCircle className="w-4 h-4 text-red-500" />
-                  <span className="text-xs text-red-600">Backend offline - Start backend server</span>
-                  <Button
-                    onClick={checkBackendConnection}
-                    variant="ghost"
-                    size="sm"
-                    className="text-xs h-auto py-1 px-2"
-                  >
-                    Retry
-                  </Button>
-                </>
-              )}
-            </div>
-
-            {/* Backend Test Links */}
-            <div className="text-center pt-2 space-x-2">
-              <Button
-                variant="link"
-                size="sm"
-                className="text-xs text-gray-500 hover:text-orange-500"
-                onClick={() => navigate('/backend-test')}
-              >
-                Backend Test
-              </Button>
-              <span className="text-gray-300">•</span>
-              <Button
-                variant="link"
-                size="sm"
-                className="text-xs text-gray-500 hover:text-orange-500"
-                onClick={() => navigate('/system-status')}
-              >
-                System Status
-              </Button>
+            {/* Link to Signup */}
+            <div className="text-center text-sm text-gray-600 pt-2 border-t border-gray-200">
+              <p className="mt-4">
+                Don't have an account?{' '}
+                <Button
+                  type="button"
+                  variant="link"
+                  className="text-orange-500 hover:text-orange-600 p-0 h-auto font-semibold"
+                  onClick={() => navigate('/signup')}
+                >
+                  Sign up here
+                </Button>
+              </p>
             </div>
           </CardContent>
         </Card>
-
-        {/* Show setup guide and diagnostics if backend is offline */}
-        {backendStatus === 'offline' && (
-          <div className="mt-6 space-y-4">
-            <BackendSetupGuide />
-            <ConnectionDiagnostics />
-          </div>
-        )}
       </div>
     </div>
   );

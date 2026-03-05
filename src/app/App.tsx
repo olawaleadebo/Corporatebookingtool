@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router';
 import { useEffect } from 'react';
 import { Toaster } from './components/ui/sonner';
 import { Login } from './pages/Login';
+import { Signup } from './pages/Signup';
 import { TravellerDashboard } from './pages/TravellerDashboard';
 import { TravelArrangerDashboard } from './pages/TravelArrangerDashboard';
 import { BookingFlow } from './pages/BookingFlow';
@@ -41,6 +42,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
           <Route path="/traveller" element={<TravellerDashboard />} />
           <Route path="/traveller/search" element={<FlightSearch />} />
           <Route path="/traveller/flight-results" element={<FlightResults />} />
