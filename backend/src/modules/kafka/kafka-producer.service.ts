@@ -14,8 +14,8 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
   ) {
     this.kafka = new Kafka({
-      clientId: this.configService.get('KAFKA_CLIENT_ID'),
-      brokers: [this.configService.get('KAFKA_BROKER')],
+      clientId: this.configService.get<string>('KAFKA_CLIENT_ID') || 'btmtravel-cobt',
+      brokers: [this.configService.get<string>('KAFKA_BROKER') || 'localhost:9092'],
       retry: {
         initialRetryTime: 100,
         retries: 8,

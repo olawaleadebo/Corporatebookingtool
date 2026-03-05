@@ -79,7 +79,7 @@ export class User {
 
   @Column({ nullable: true })
   @Exclude()
-  refreshToken: string;
+  refreshToken: string | null;
 
   @CreateDateColumn()
   createdAt: Date;
