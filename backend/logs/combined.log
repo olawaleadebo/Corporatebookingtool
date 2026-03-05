@@ -528,3 +528,125 @@
 {"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-03-05T08:47:50.408Z"}
 {"context":"ExceptionsHandler","level":"error","message":"relation \"users\" does not exist","stack":["QueryFailedError: relation \"users\" does not exist\n    at PostgresQueryRunner.query (/app/node_modules/typeorm/driver/postgres/PostgresQueryRunner.js:216:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async SelectQueryBuilder.loadRawResults (/app/node_modules/typeorm/query-builder/SelectQueryBuilder.js:2231:25)\n    at async SelectQueryBuilder.executeEntitiesAndRawResults (/app/node_modules/typeorm/query-builder/SelectQueryBuilder.js:2079:26)\n    at async SelectQueryBuilder.getRawAndEntities (/app/node_modules/typeorm/query-builder/SelectQueryBuilder.js:684:29)\n    at async SelectQueryBuilder.getOne (/app/node_modules/typeorm/query-builder/SelectQueryBuilder.js:711:25)\n    at async AuthService.validateUser (/app/dist/modules/auth/auth.service.js:114:22)\n    at async AuthService.login (/app/dist/modules/auth/auth.service.js:95:22)\n    at async /app/node_modules/@nestjs/core/router/router-execution-context.js:46:28\n    at async /app/node_modules/@nestjs/core/router/router-proxy.js:9:17"],"timestamp":"2026-03-05T08:49:15.429Z"}
 {"context":"ExceptionsHandler","level":"error","message":"relation \"users\" does not exist","stack":["QueryFailedError: relation \"users\" does not exist\n    at PostgresQueryRunner.query (/app/node_modules/typeorm/driver/postgres/PostgresQueryRunner.js:216:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async SelectQueryBuilder.loadRawResults (/app/node_modules/typeorm/query-builder/SelectQueryBuilder.js:2231:25)\n    at async SelectQueryBuilder.executeEntitiesAndRawResults (/app/node_modules/typeorm/query-builder/SelectQueryBuilder.js:2079:26)\n    at async SelectQueryBuilder.getRawAndEntities (/app/node_modules/typeorm/query-builder/SelectQueryBuilder.js:684:29)\n    at async SelectQueryBuilder.getOne (/app/node_modules/typeorm/query-builder/SelectQueryBuilder.js:711:25)\n    at async AuthService.validateUser (/app/dist/modules/auth/auth.service.js:114:22)\n    at async AuthService.login (/app/dist/modules/auth/auth.service.js:95:22)\n    at async /app/node_modules/@nestjs/core/router/router-execution-context.js:46:28\n    at async /app/node_modules/@nestjs/core/router/router-proxy.js:9:17"],"timestamp":"2026-03-05T08:57:10.898Z"}
+{"context":"KafkaProducerService","level":"info","message":"Kafka producer connected","timestamp":"2026-03-05T09:56:23.227Z"}
+{"context":"KafkaConsumerService","level":"info","message":"Kafka consumer connected","timestamp":"2026-03-05T09:56:23.231Z"}
+{"context":"KafkaConsumerService","level":"info","message":"Kafka consumer started","timestamp":"2026-03-05T09:56:30.311Z"}
+{"context":"NestFactory","level":"info","message":"Starting Nest application...","timestamp":"2026-03-05T09:56:30.339Z"}
+{"context":"InstanceLoader","level":"info","message":"AppModule dependencies initialized","timestamp":"2026-03-05T09:56:30.341Z"}
+{"context":"InstanceLoader","level":"info","message":"TypeOrmModule dependencies initialized","timestamp":"2026-03-05T09:56:30.343Z"}
+{"context":"InstanceLoader","level":"info","message":"PassportModule dependencies initialized","timestamp":"2026-03-05T09:56:30.344Z"}
+{"context":"InstanceLoader","level":"info","message":"NotificationModule dependencies initialized","timestamp":"2026-03-05T09:56:30.344Z"}
+{"context":"InstanceLoader","level":"info","message":"PolicyModule dependencies initialized","timestamp":"2026-03-05T09:56:30.345Z"}
+{"context":"InstanceLoader","level":"info","message":"HttpModule dependencies initialized","timestamp":"2026-03-05T09:56:30.346Z"}
+{"context":"InstanceLoader","level":"info","message":"WebsocketModule dependencies initialized","timestamp":"2026-03-05T09:56:30.347Z"}
+{"context":"InstanceLoader","level":"info","message":"ConfigHostModule dependencies initialized","timestamp":"2026-03-05T09:56:30.347Z"}
+{"context":"InstanceLoader","level":"info","message":"WinstonModule dependencies initialized","timestamp":"2026-03-05T09:56:30.348Z"}
+{"context":"InstanceLoader","level":"info","message":"TerminusModule dependencies initialized","timestamp":"2026-03-05T09:56:30.348Z"}
+{"context":"InstanceLoader","level":"info","message":"ConfigModule dependencies initialized","timestamp":"2026-03-05T09:56:30.348Z"}
+{"context":"InstanceLoader","level":"info","message":"ConfigModule dependencies initialized","timestamp":"2026-03-05T09:56:30.349Z"}
+{"context":"InstanceLoader","level":"info","message":"HealthModule dependencies initialized","timestamp":"2026-03-05T09:56:30.349Z"}
+{"context":"InstanceLoader","level":"info","message":"KafkaModule dependencies initialized","timestamp":"2026-03-05T09:56:30.349Z"}
+{"context":"InstanceLoader","level":"info","message":"JwtModule dependencies initialized","timestamp":"2026-03-05T09:56:30.350Z"}
+{"context":"InstanceLoader","level":"info","message":"SearchModule dependencies initialized","timestamp":"2026-03-05T09:56:30.350Z"}
+{"context":"InstanceLoader","level":"info","message":"TypeOrmCoreModule dependencies initialized","timestamp":"2026-03-05T09:56:30.350Z"}
+{"context":"InstanceLoader","level":"info","message":"TypeOrmModule dependencies initialized","timestamp":"2026-03-05T09:56:30.351Z"}
+{"context":"InstanceLoader","level":"info","message":"TypeOrmModule dependencies initialized","timestamp":"2026-03-05T09:56:30.351Z"}
+{"context":"InstanceLoader","level":"info","message":"TypeOrmModule dependencies initialized","timestamp":"2026-03-05T09:56:30.351Z"}
+{"context":"InstanceLoader","level":"info","message":"UsersModule dependencies initialized","timestamp":"2026-03-05T09:56:30.351Z"}
+{"context":"InstanceLoader","level":"info","message":"BookingModule dependencies initialized","timestamp":"2026-03-05T09:56:30.352Z"}
+{"context":"InstanceLoader","level":"info","message":"PaymentModule dependencies initialized","timestamp":"2026-03-05T09:56:30.352Z"}
+{"context":"InstanceLoader","level":"info","message":"AuthModule dependencies initialized","timestamp":"2026-03-05T09:56:30.352Z"}
+{"context":"WebSocketsController","level":"info","message":"WebsocketGateway subscribed to the \"authenticate\" message","timestamp":"2026-03-05T09:56:30.352Z"}
+{"context":"RoutesResolver","level":"info","message":"AuthController {/api/v1/auth}:","timestamp":"2026-03-05T09:56:30.353Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/auth/register, POST} route","timestamp":"2026-03-05T09:56:30.353Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/auth/login, POST} route","timestamp":"2026-03-05T09:56:30.353Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/auth/refresh, POST} route","timestamp":"2026-03-05T09:56:30.353Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/auth/logout, POST} route","timestamp":"2026-03-05T09:56:30.353Z"}
+{"context":"RoutesResolver","level":"info","message":"UsersController {/api/v1/users}:","timestamp":"2026-03-05T09:56:30.353Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/users/me, GET} route","timestamp":"2026-03-05T09:56:30.354Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/users, GET} route","timestamp":"2026-03-05T09:56:30.354Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/users/:id, GET} route","timestamp":"2026-03-05T09:56:30.354Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/users/:id, PATCH} route","timestamp":"2026-03-05T09:56:30.354Z"}
+{"context":"RoutesResolver","level":"info","message":"SearchController {/api/v1/search}:","timestamp":"2026-03-05T09:56:30.355Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/search/flights, GET} route","timestamp":"2026-03-05T09:56:30.355Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/search/hotels, GET} route","timestamp":"2026-03-05T09:56:30.356Z"}
+{"context":"RoutesResolver","level":"info","message":"BookingController {/api/v1/bookings}:","timestamp":"2026-03-05T09:56:30.356Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/bookings, POST} route","timestamp":"2026-03-05T09:56:30.357Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/bookings, GET} route","timestamp":"2026-03-05T09:56:30.358Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/bookings/pending, GET} route","timestamp":"2026-03-05T09:56:30.358Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/bookings/:id, GET} route","timestamp":"2026-03-05T09:56:30.358Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/bookings/:id/approve, PATCH} route","timestamp":"2026-03-05T09:56:30.359Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/bookings/:id/reject, PATCH} route","timestamp":"2026-03-05T09:56:30.359Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/bookings/:id/confirm, PATCH} route","timestamp":"2026-03-05T09:56:30.359Z"}
+{"context":"RoutesResolver","level":"info","message":"PaymentController {/api/v1/payments}:","timestamp":"2026-03-05T09:56:30.359Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/payments/initialize, POST} route","timestamp":"2026-03-05T09:56:30.359Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/payments/verify/:reference, GET} route","timestamp":"2026-03-05T09:56:30.359Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/payments/webhook, POST} route","timestamp":"2026-03-05T09:56:30.359Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/payments, GET} route","timestamp":"2026-03-05T09:56:30.360Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/payments/:id, GET} route","timestamp":"2026-03-05T09:56:30.360Z"}
+{"context":"RoutesResolver","level":"info","message":"HealthController {/api/v1/health}:","timestamp":"2026-03-05T09:56:30.360Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/health, GET} route","timestamp":"2026-03-05T09:56:30.360Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/health/ready, GET} route","timestamp":"2026-03-05T09:56:30.361Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/health/live, GET} route","timestamp":"2026-03-05T09:56:30.361Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-03-05T09:56:30.361Z"}
+{"context":"KafkaConsumerService","level":"info","message":"Kafka consumer connected","timestamp":"2026-03-05T11:19:07.326Z"}
+{"context":"KafkaProducerService","level":"info","message":"Kafka producer connected","timestamp":"2026-03-05T11:19:07.358Z"}
+{"context":"KafkaConsumerService","level":"info","message":"Kafka consumer started","timestamp":"2026-03-05T11:19:20.051Z"}
+{"context":"NestFactory","level":"info","message":"Starting Nest application...","timestamp":"2026-03-05T11:19:20.073Z"}
+{"context":"InstanceLoader","level":"info","message":"AppModule dependencies initialized","timestamp":"2026-03-05T11:19:20.076Z"}
+{"context":"InstanceLoader","level":"info","message":"TypeOrmModule dependencies initialized","timestamp":"2026-03-05T11:19:20.079Z"}
+{"context":"InstanceLoader","level":"info","message":"PassportModule dependencies initialized","timestamp":"2026-03-05T11:19:20.080Z"}
+{"context":"InstanceLoader","level":"info","message":"NotificationModule dependencies initialized","timestamp":"2026-03-05T11:19:20.080Z"}
+{"context":"InstanceLoader","level":"info","message":"PolicyModule dependencies initialized","timestamp":"2026-03-05T11:19:20.081Z"}
+{"context":"InstanceLoader","level":"info","message":"HttpModule dependencies initialized","timestamp":"2026-03-05T11:19:20.082Z"}
+{"context":"InstanceLoader","level":"info","message":"WebsocketModule dependencies initialized","timestamp":"2026-03-05T11:19:20.082Z"}
+{"context":"InstanceLoader","level":"info","message":"ConfigHostModule dependencies initialized","timestamp":"2026-03-05T11:19:20.083Z"}
+{"context":"InstanceLoader","level":"info","message":"WinstonModule dependencies initialized","timestamp":"2026-03-05T11:19:20.083Z"}
+{"context":"InstanceLoader","level":"info","message":"TerminusModule dependencies initialized","timestamp":"2026-03-05T11:19:20.084Z"}
+{"context":"InstanceLoader","level":"info","message":"ConfigModule dependencies initialized","timestamp":"2026-03-05T11:19:20.085Z"}
+{"context":"InstanceLoader","level":"info","message":"ConfigModule dependencies initialized","timestamp":"2026-03-05T11:19:20.086Z"}
+{"context":"InstanceLoader","level":"info","message":"HealthModule dependencies initialized","timestamp":"2026-03-05T11:19:20.086Z"}
+{"context":"InstanceLoader","level":"info","message":"KafkaModule dependencies initialized","timestamp":"2026-03-05T11:19:20.087Z"}
+{"context":"InstanceLoader","level":"info","message":"JwtModule dependencies initialized","timestamp":"2026-03-05T11:19:20.087Z"}
+{"context":"InstanceLoader","level":"info","message":"SearchModule dependencies initialized","timestamp":"2026-03-05T11:19:20.088Z"}
+{"context":"InstanceLoader","level":"info","message":"TypeOrmCoreModule dependencies initialized","timestamp":"2026-03-05T11:19:20.088Z"}
+{"context":"InstanceLoader","level":"info","message":"TypeOrmModule dependencies initialized","timestamp":"2026-03-05T11:19:20.088Z"}
+{"context":"InstanceLoader","level":"info","message":"TypeOrmModule dependencies initialized","timestamp":"2026-03-05T11:19:20.088Z"}
+{"context":"InstanceLoader","level":"info","message":"TypeOrmModule dependencies initialized","timestamp":"2026-03-05T11:19:20.088Z"}
+{"context":"InstanceLoader","level":"info","message":"UsersModule dependencies initialized","timestamp":"2026-03-05T11:19:20.088Z"}
+{"context":"InstanceLoader","level":"info","message":"BookingModule dependencies initialized","timestamp":"2026-03-05T11:19:20.088Z"}
+{"context":"InstanceLoader","level":"info","message":"PaymentModule dependencies initialized","timestamp":"2026-03-05T11:19:20.088Z"}
+{"context":"InstanceLoader","level":"info","message":"AuthModule dependencies initialized","timestamp":"2026-03-05T11:19:20.089Z"}
+{"context":"WebSocketsController","level":"info","message":"WebsocketGateway subscribed to the \"authenticate\" message","timestamp":"2026-03-05T11:19:20.089Z"}
+{"context":"RoutesResolver","level":"info","message":"AuthController {/api/v1/auth}:","timestamp":"2026-03-05T11:19:20.089Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/auth/register, POST} route","timestamp":"2026-03-05T11:19:20.089Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/auth/login, POST} route","timestamp":"2026-03-05T11:19:20.089Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/auth/refresh, POST} route","timestamp":"2026-03-05T11:19:20.089Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/auth/logout, POST} route","timestamp":"2026-03-05T11:19:20.090Z"}
+{"context":"RoutesResolver","level":"info","message":"UsersController {/api/v1/users}:","timestamp":"2026-03-05T11:19:20.090Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/users/me, GET} route","timestamp":"2026-03-05T11:19:20.090Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/users, GET} route","timestamp":"2026-03-05T11:19:20.090Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/users/:id, GET} route","timestamp":"2026-03-05T11:19:20.090Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/users/:id, PATCH} route","timestamp":"2026-03-05T11:19:20.090Z"}
+{"context":"RoutesResolver","level":"info","message":"SearchController {/api/v1/search}:","timestamp":"2026-03-05T11:19:20.090Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/search/flights, GET} route","timestamp":"2026-03-05T11:19:20.091Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/search/hotels, GET} route","timestamp":"2026-03-05T11:19:20.091Z"}
+{"context":"RoutesResolver","level":"info","message":"BookingController {/api/v1/bookings}:","timestamp":"2026-03-05T11:19:20.091Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/bookings, POST} route","timestamp":"2026-03-05T11:19:20.091Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/bookings, GET} route","timestamp":"2026-03-05T11:19:20.091Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/bookings/pending, GET} route","timestamp":"2026-03-05T11:19:20.091Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/bookings/:id, GET} route","timestamp":"2026-03-05T11:19:20.092Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/bookings/:id/approve, PATCH} route","timestamp":"2026-03-05T11:19:20.092Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/bookings/:id/reject, PATCH} route","timestamp":"2026-03-05T11:19:20.094Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/bookings/:id/confirm, PATCH} route","timestamp":"2026-03-05T11:19:20.094Z"}
+{"context":"RoutesResolver","level":"info","message":"PaymentController {/api/v1/payments}:","timestamp":"2026-03-05T11:19:20.095Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/payments/initialize, POST} route","timestamp":"2026-03-05T11:19:20.095Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/payments/verify/:reference, GET} route","timestamp":"2026-03-05T11:19:20.095Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/payments/webhook, POST} route","timestamp":"2026-03-05T11:19:20.095Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/payments, GET} route","timestamp":"2026-03-05T11:19:20.095Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/payments/:id, GET} route","timestamp":"2026-03-05T11:19:20.096Z"}
+{"context":"RoutesResolver","level":"info","message":"HealthController {/api/v1/health}:","timestamp":"2026-03-05T11:19:20.096Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/health, GET} route","timestamp":"2026-03-05T11:19:20.096Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/health/ready, GET} route","timestamp":"2026-03-05T11:19:20.096Z"}
+{"context":"RouterExplorer","level":"info","message":"Mapped {/api/v1/health/live, GET} route","timestamp":"2026-03-05T11:19:20.096Z"}
+{"context":"NestApplication","level":"info","message":"Nest application successfully started","timestamp":"2026-03-05T11:19:20.097Z"}
