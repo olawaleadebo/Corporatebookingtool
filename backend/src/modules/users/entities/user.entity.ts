@@ -78,9 +78,12 @@ export class User {
   @Column({ type: 'jsonb', nullable: true })
   metadata: Record<string, any>;
 
-  @Column({ nullable: true })
-  @Exclude()
-  refreshToken: string | null;
+  // @Column({ nullable: true })
+  // @Exclude()
+  // refreshToken: string | any;
+
+  @Column({ type: 'text', nullable: true })
+  refreshToken?: string;
 
   @CreateDateColumn()
   createdAt: Date;
