@@ -3,8 +3,11 @@ import { useNavigate, useLocation } from 'react-router';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Textarea } from '../components/ui/textarea';
-import { ArrowLeft, Plane, Hotel, Car, CheckCircle, AlertCircle, FileText } from 'lucide-react';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { ArrowLeft, Plane, Hotel, Car, CheckCircle, AlertCircle, FileText, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { bookingService } from '../../services/booking.service';
 
 export function BookingSummary() {
   const navigate = useNavigate();
@@ -17,6 +20,8 @@ export function BookingSummary() {
   const searchParams = bookingState?.searchParams;
 
   const [justification, setJustification] = useState('');
+  const [costCenter, setCostCenter] = useState('');
+  const [projectCode, setProjectCode] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // If no flight data, redirect back
@@ -53,7 +58,7 @@ export function BookingSummary() {
   // Get rental days for car display
   const carDays = car ? 3 : 0;
 
-  const handleSubmitForApproval = () => {
+  const handleSubmitForApproval = async () => {
     if (!justification.trim()) {
       toast.error('Please provide a justification for this trip');
       return;
@@ -61,16 +66,37 @@ export function BookingSummary() {
 
     setIsSubmitting(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
-      toast.success('Booking request submitted for approval!');
+    try {
+      // Create booking via API
+      const bookingData = {
+        type: (hotel && car) ? 'combined' : (hotel ? 'flight' : 'flight') as 'flight' | 'hotel' | 'car' | 'combined',
+        flightDetails: flight,
+        hotelDetails: hotel || undefined,
+        carDetails: car || undefined,
+        flightPrice: flightTotal,
+        hotelPrice: hotel ? hotelTotal : undefined,
+        carPrice: car ? carTotal : undefined,
+        justification: justification.trim(),
+        costCenter: costCenter.trim() || undefined,
+        projectCode: projectCode.trim() || undefined,
+      };
+
+      console.log('📋 Creating booking:', bookingData);
+      const booking = await bookingService.createBooking(bookingData);
+      
+      console.log('✅ Booking created:', booking);
+      toast.success(`Booking ${booking.bookingReference} submitted for approval!`);
       
       // Navigate to bookings page
       setTimeout(() => {
         navigate('/traveller/bookings');
       }, 1500);
-    }, 2000);
+    } catch (error: any) {
+      console.error('❌ Booking creation failed:', error);
+      toast.error(error.message || 'Failed to create booking');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

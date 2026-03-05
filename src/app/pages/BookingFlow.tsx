@@ -32,25 +32,7 @@ export function BookingFlow() {
   const [returnDate, setReturnDate] = useState<Date>();
   const [selectedOption, setSelectedOption] = useState<any>(null);
   const [policyCheck, setPolicyCheck] = useState({ compliant: true, warnings: [] as string[] });
-
-  // Mock search results
-  const mockFlights = [
-    { id: 1, airline: 'British Airways', departure: '08:00', arrival: '20:00', price: 1245, stops: 'Direct', duration: '12h', policyCompliant: true },
-    { id: 2, airline: 'United Airlines', departure: '10:30', arrival: '23:15', price: 980, stops: '1 stop', duration: '14h 45m', policyCompliant: true },
-    { id: 3, airline: 'Lufthansa', departure: '14:00', arrival: '04:30+1', price: 2100, stops: 'Direct', duration: '12h 30m', policyCompliant: false },
-  ];
-
-  const mockHotels = [
-    { id: 1, name: 'Hilton London', rating: 4.5, price: 189, amenities: 'WiFi, Breakfast, Gym', policyCompliant: true },
-    { id: 2, name: 'Premier Inn', rating: 4.0, price: 129, amenities: 'WiFi, Breakfast', policyCompliant: true },
-    { id: 3, name: 'The Ritz London', rating: 5.0, price: 450, amenities: 'All amenities', policyCompliant: false },
-  ];
-
-  const mockCars = [
-    { id: 1, type: 'Economy', model: 'Toyota Corolla', price: 45, features: 'AC, Automatic', policyCompliant: true },
-    { id: 2, type: 'SUV', model: 'Honda CR-V', price: 75, features: 'AC, Automatic, GPS', policyCompliant: true },
-    { id: 3, type: 'Luxury', model: 'BMW 5 Series', price: 150, features: 'All features', policyCompliant: false },
-  ];
+  const [searchResults, setSearchResults] = useState<any[]>([]);
 
   const getBookingIcon = () => {
     switch (bookingType) {
@@ -79,16 +61,8 @@ export function BookingFlow() {
   };
 
   const getSearchResults = () => {
-    switch (bookingType) {
-      case 'flight':
-        return mockFlights;
-      case 'hotel':
-        return mockHotels;
-      case 'car':
-        return mockCars;
-      default:
-        return [];
-    }
+    // This would fetch from API in production
+    return searchResults;
   };
 
   const handleSearch = () => {

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
@@ -25,123 +25,59 @@ import {
   Calendar,
   DollarSign,
   User,
-  Filter
+  Filter,
+  Loader2
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { bookingService, type Booking } from '../../services/booking.service';
+import { authService } from '../../services/auth.service';
 
 export function ApprovalQueue() {
   const navigate = useNavigate();
-  const [selectedBooking, setSelectedBooking] = useState<any>(null);
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [showApproveDialog, setShowApproveDialog] = useState(false);
   const [showRejectDialog, setShowRejectDialog] = useState(false);
   const [rejectionReason, setRejectionReason] = useState('');
   const [approvalNotes, setApprovalNotes] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const [pendingRequests, setPendingRequests] = useState([
-    {
-      id: 1,
-      traveller: 'Sarah Johnson',
-      email: 'sarah.johnson@company.com',
-      department: 'Marketing',
-      type: 'flight',
-      title: 'San Francisco to Tokyo',
-      airline: 'United Airlines',
-      date: '2026-03-20',
-      returnDate: '2026-03-25',
-      amount: 2450,
-      costCenter: 'Marketing',
-      projectCode: 'PRJ-2026-042',
-      justification: 'Attending Tokyo Tech Conference to meet with potential clients and present our new product line.',
-      submittedDate: '2026-03-01 14:30',
-      policyCompliant: true,
-      budgetStatus: 'within',
-      urgency: 'high',
-      details: {
-        departure: '08:00 AM',
-        arrival: '2:30 PM +1',
-        stops: '1 stop',
-        duration: '14h 30m',
-        class: 'Economy'
+  const [pendingRequests, setPendingRequests] = useState<Booking[]>([]);
+
+  // Fetch pending approvals
+  useEffect(() => {
+    const fetchPendingApprovals = async () => {
+      try {
+        setIsLoading(true);
+        const data = await bookingService.getPendingApprovals();
+        setPendingRequests(data);
+      } catch (error: any) {
+        console.error('Failed to fetch pending approvals:', error);
+        toast.error(error.message || 'Failed to load pending approvals');
+        setPendingRequests([]);
+      } finally {
+        setIsLoading(false);
       }
-    },
-    {
-      id: 2,
-      traveller: 'Michael Chen',
-      email: 'michael.chen@company.com',
-      department: 'Sales',
-      type: 'hotel',
-      title: 'Grand Hyatt Tokyo',
-      location: 'Tokyo, Japan',
-      date: '2026-03-20',
-      returnDate: '2026-03-25',
-      amount: 1890,
-      costCenter: 'Sales',
-      projectCode: 'PRJ-2026-042',
-      justification: 'Accommodation for Tokyo Tech Conference attendance.',
-      submittedDate: '2026-03-01 14:35',
-      policyCompliant: false,
-      budgetStatus: 'over',
-      urgency: 'medium',
-      policyViolations: ['Hotel rate exceeds $300/night limit by $78'],
-      details: {
-        roomType: 'Deluxe King',
-        rate: '378/night',
-        nights: '5 nights',
-        amenities: 'Breakfast included, WiFi, Gym'
+    };
+
+    fetchPendingApprovals();
+
+    // Listen for booking updates via WebSocket
+    const handleBookingUpdate = (event: any) => {
+      const updatedBooking = event.detail;
+      // Remove from pending if status changed
+      if (updatedBooking.status !== 'pending_approval') {
+        setPendingRequests(prev => prev.filter(b => b.id !== updatedBooking.id));
+      } else {
+        setPendingRequests(prev => 
+          prev.map(b => b.id === updatedBooking.id ? { ...b, ...updatedBooking } : b)
+        );
       }
-    },
-    {
-      id: 3,
-      traveller: 'Emily Davis',
-      email: 'emily.davis@company.com',
-      department: 'Operations',
-      type: 'car',
-      title: 'Toyota Camry',
-      location: 'Tokyo Airport',
-      date: '2026-03-20',
-      returnDate: '2026-03-25',
-      amount: 450,
-      costCenter: 'Operations',
-      projectCode: 'PRJ-2026-042',
-      justification: 'Ground transportation for Tokyo conference.',
-      submittedDate: '2026-03-01 15:00',
-      policyCompliant: true,
-      budgetStatus: 'within',
-      urgency: 'low',
-      details: {
-        carType: 'Mid-size',
-        rate: '$90/day',
-        duration: '5 days',
-        features: 'Automatic, AC, GPS'
-      }
-    },
-    {
-      id: 4,
-      traveller: 'Robert Martinez',
-      email: 'robert.martinez@company.com',
-      department: 'Engineering',
-      type: 'flight',
-      title: 'Boston to London',
-      airline: 'British Airways',
-      date: '2026-03-22',
-      returnDate: '2026-03-29',
-      amount: 1850,
-      costCenter: 'Engineering',
-      projectCode: 'PRJ-2026-055',
-      justification: 'Technical training at London office and collaboration with UK team on infrastructure project.',
-      submittedDate: '2026-03-01 16:20',
-      policyCompliant: true,
-      budgetStatus: 'within',
-      urgency: 'medium',
-      details: {
-        departure: '6:30 PM',
-        arrival: '6:00 AM +1',
-        stops: 'Direct',
-        duration: '7h 30m',
-        class: 'Economy'
-      }
-    },
-  ]);
+    };
+
+    window.addEventListener('booking-updated', handleBookingUpdate);
+    return () => window.removeEventListener('booking-updated', handleBookingUpdate);
+  }, []);
 
   const getUrgencyColor = (urgency: string) => {
     switch (urgency) {
@@ -169,34 +105,65 @@ export function ApprovalQueue() {
     }
   };
 
-  const handleApprove = (booking: any) => {
+  const handleApprove = (booking: Booking) => {
     setSelectedBooking(booking);
     setShowApproveDialog(true);
   };
 
-  const handleReject = (booking: any) => {
+  const handleReject = (booking: Booking) => {
     setSelectedBooking(booking);
     setShowRejectDialog(true);
   };
 
-  const confirmApproval = () => {
-    setPendingRequests(pendingRequests.filter(r => r.id !== selectedBooking.id));
-    toast.success(`Booking request for ${selectedBooking.traveller} approved`);
-    setShowApproveDialog(false);
-    setApprovalNotes('');
-    setSelectedBooking(null);
+  const confirmApproval = async () => {
+    if (!selectedBooking) return;
+
+    try {
+      setIsProcessing(true);
+      const user = authService.getCurrentUser();
+      const approverName = user ? `${user.firstName} ${user.lastName}` : 'Unknown';
+      
+      await bookingService.approveBooking(selectedBooking.id, approverName);
+      
+      setPendingRequests(pendingRequests.filter(r => r.id !== selectedBooking.id));
+      toast.success(`Booking ${selectedBooking.bookingReference} approved`);
+      setShowApproveDialog(false);
+      setApprovalNotes('');
+      setSelectedBooking(null);
+    } catch (error: any) {
+      console.error('Approval failed:', error);
+      toast.error(error.message || 'Failed to approve booking');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
-  const confirmRejection = () => {
+  const confirmRejection = async () => {
     if (!rejectionReason.trim()) {
       toast.error('Please provide a rejection reason');
       return;
     }
-    setPendingRequests(pendingRequests.filter(r => r.id !== selectedBooking.id));
-    toast.error(`Booking request for ${selectedBooking.traveller} rejected`);
-    setShowRejectDialog(false);
-    setRejectionReason('');
-    setSelectedBooking(null);
+
+    if (!selectedBooking) return;
+
+    try {
+      setIsProcessing(true);
+      const user = authService.getCurrentUser();
+      const approverName = user ? `${user.firstName} ${user.lastName}` : 'Unknown';
+      
+      await bookingService.rejectBooking(selectedBooking.id, approverName, rejectionReason);
+      
+      setPendingRequests(pendingRequests.filter(r => r.id !== selectedBooking.id));
+      toast.error(`Booking ${selectedBooking.bookingReference} rejected`);
+      setShowRejectDialog(false);
+      setRejectionReason('');
+      setSelectedBooking(null);
+    } catch (error: any) {
+      console.error('Rejection failed:', error);
+      toast.error(error.message || 'Failed to reject booking');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (

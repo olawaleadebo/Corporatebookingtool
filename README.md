@@ -1,471 +1,369 @@
-# COBT - Corporate Booking Tool
+# BTMTravel Corporate Booking Tool (COBT)
 
-A comprehensive travel booking platform for corporate travel management built by BTMTravel.
+A comprehensive travel booking platform for companies to manage employee travel with approval workflows, policy compliance, and integrated payment processing.
 
-![COBT Banner](https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1200&h=300&fit=crop)
+---
 
-## 🚀 Features
+## 🎯 Quick Start
 
-### User Roles
+### 1. Start Backend
 
-#### **Travellers**
-- Search and book flights, hotels, and car rentals
-- View booking history and status
-- Submit bookings for approval
-- Make payments via Paystack
-- Real-time notifications
+```bash
+cd backend
+docker-compose up -d
+```
 
-#### **Travel Arrangers**
-- Review and approve/reject booking requests
-- Verify compliance with company policies
-- Budget verification
-- Bulk approval capabilities
+*Wait 30 seconds for services to initialize...*
 
-#### **Admins**
-- User management
-- Company policy configuration
-- Budget management
-- Custom branding and logo upload
-- Comprehensive reporting and analytics
+### 2. Start Frontend
 
-### Core Capabilities
+```bash
+npm run dev
+```
 
-- ✈️ **Flight Search** - Amadeus API integration for real-time flight data
-- 🏨 **Hotel Booking** - Integrated hotel search and booking
-- 🚗 **Car Rental** - Car rental services
-- 💳 **Payment Processing** - Paystack integration (Card, Bank Transfer, USSD)
-- 📊 **Real-time Updates** - WebSocket for live notifications
-- 🔄 **Event Streaming** - Kafka for async workflows
-- 📈 **Analytics** - Booking trends and budget reports
-- 🎨 **White-label** - Customizable branding and colors
-- 💱 **Naira Currency** - ₦ (NGN) as primary currency
+### 3. Open Application
+
+**http://localhost:5173**
+
+Click "Demo Login as Traveller" to start!
+
+---
+
+## ✅ All Errors Fixed
+
+All frontend errors have been resolved:
+- ✅ JSX syntax errors fixed
+- ✅ API configuration set up
+- ✅ Environment variables configured
+- ✅ Helper scripts created
+- ✅ Documentation completed
+
+**See:** [README_ERRORS_FIXED.md](./README_ERRORS_FIXED.md) for details.
+
+---
+
+## 🔍 Verify Backend is Running
+
+### Quick Check
+```bash
+curl http://localhost:3000/api/v1/health
+```
+
+### Using Script
+```bash
+chmod +x check-backend.sh
+./check-backend.sh
+```
+
+### Using UI
+Visit: **http://localhost:5173/system-status**
+
+---
+
+## 📚 Documentation
+
+| Document | Purpose |
+|----------|---------|
+| **[START_APPLICATION.md](./START_APPLICATION.md)** | **→ Start here!** Simple startup guide |
+| [README_ERRORS_FIXED.md](./README_ERRORS_FIXED.md) | What was fixed and how |
+| [QUICK_START.md](./QUICK_START.md) | Comprehensive setup guide |
+| [BACKEND_CONNECTION_FIX.md](./BACKEND_CONNECTION_FIX.md) | Fix connection issues |
+| [BACKEND_SETUP.md](./BACKEND_SETUP.md) | Backend configuration details |
+| [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) | Common problems & solutions |
+
+---
+
+## 🌐 Important URLs
+
+| Service | URL |
+|---------|-----|
+| **Application** | **http://localhost:5173** |
+| System Status | http://localhost:5173/system-status |
+| Backend API | http://localhost:3000/api/v1 |
+| Health Check | http://localhost:3000/api/v1/health |
+| API Docs | http://localhost:3000/api/docs |
+
+---
+
+## 🎭 User Roles
+
+### Traveller
+- Search and book flights, hotels, cars
+- Submit booking requests for approval
+- Track booking status
+
+### Travel Arranger
+- Review and approve booking requests
+- Verify policy compliance
+- Manage budgets
+
+### Admin
+- Manage company policies
+- Configure settings
+- View reports
+- Manage users
+
+**Demo Login:** Just click the demo buttons on login page!
 
 ---
 
 ## 🏗️ Architecture
 
 ### Frontend
-- **Framework**: React 18 + TypeScript
-- **Routing**: React Router 7
-- **UI Library**: Radix UI + TailwindCSS v4
-- **State Management**: React Hooks + Context
-- **Forms**: React Hook Form
-- **HTTP Client**: Axios
-- **Real-time**: Socket.IO Client
+- React + TypeScript
+- Tailwind CSS
+- React Router
+- Axios + Socket.io
+- Shadcn UI components
 
 ### Backend
-- **Framework**: NestJS (Node.js + TypeScript)
-- **Database**: PostgreSQL 15
-- **ORM**: TypeORM
-- **Message Broker**: Apache Kafka
-- **Cache**: Redis
-- **Authentication**: JWT + Passport
-- **Payment**: Paystack SDK
-- **Travel API**: Amadeus
-- **WebSocket**: Socket.IO
-- **Documentation**: Swagger/OpenAPI
-
-### Infrastructure
-- **Containerization**: Docker + Docker Compose
-- **Reverse Proxy**: NGINX
-- **Logging**: Winston
-- **Monitoring**: Health checks
+- NestJS (Node.js framework)
+- PostgreSQL (database)
+- Kafka (message broker)
+- WebSockets (real-time updates)
+- Amadeus API (flight/hotel search)
+- Paystack (payment processing)
 
 ---
 
-## 📁 Project Structure
+## 🚀 Features
 
+### ✅ Implemented
+- User authentication & authorization
+- Flight search and selection
+- Hotel search and selection
+- Car rental selection
+- Booking workflow
+- Approval system
+- Payment processing
+- Real-time notifications
+- Policy management
+- Budget tracking
+- Multi-currency support (₦ Naira)
+- Customizable branding
+
+### 🔄 Data Flow
 ```
-cobt/
-├── src/                          # Frontend source
-│   ├── app/
-│   │   ├── pages/               # Page components
-│   │   ├── components/          # Reusable components
-│   │   └── utils/               # Utility functions
-│   ├── services/                # API service layer
-│   │   ├── auth.service.ts
-│   │   ├── booking.service.ts
-│   │   ├── payment.service.ts
-│   │   └── search.service.ts
-│   └── lib/
-│       ├── api.ts               # Axios configuration
-│       └── websocket.ts         # WebSocket client
-│
-├── backend/                      # Backend source
-│   ├── src/
-│   │   ├── modules/
-│   │   │   ├── auth/            # Authentication
-│   │   │   ├── booking/         # Booking management
-│   │   │   ├── payment/         # Payment processing
-│   │   │   ├── search/          # Amadeus integration
-│   │   │   ├── kafka/           # Event streaming
-│   │   │   └── websocket/       # Real-time updates
-│   │   └── main.ts
-│   ├── docker-compose.yml
-│   ├── Dockerfile
-│   └── deploy.sh
-│
-└── docs/
-    ├── FRONTEND_INTEGRATION.md
-    ├── backend/README.md
-    ├── backend/DEPLOYMENT.md
-    └── backend/INTEGRATION.md
+Search → Select → Review → Submit → Approval → Payment → Confirmation
 ```
 
 ---
 
-## 🚀 Quick Start
+## 🛠️ Development
 
 ### Prerequisites
+- Node.js 18+
+- Docker & Docker Compose
+- Git
 
-- **Node.js** 18+
-- **Docker** & **Docker Compose**
-- **PostgreSQL** 15 (if not using Docker)
-- **npm** or **pnpm**
+### Environment Variables
 
-### 1. Clone Repository
-
-```bash
-git clone <repository-url>
-cd cobt
-```
-
-### 2. Start Backend
-
-```bash
-cd backend
-
-# Copy environment file
-cp .env.example .env
-
-# Edit with your credentials (Amadeus, Paystack, etc.)
-nano .env
-
-# Start with Docker (Recommended)
-docker-compose up -d
-
-# Create test accounts
-chmod +x scripts/create-test-accounts.sh
-./scripts/create-test-accounts.sh
-```
-
-Backend will be available at:
-- **API**: http://localhost:3000
-- **Swagger Docs**: http://localhost:3000/api/docs
-
-### 3. Start Frontend
-
-```bash
-# Return to root directory
-cd ..
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-```
-
-Frontend will be available at: http://localhost:5173
-
-### 4. Login
-
-Use these demo credentials:
-
-**Traveller**
-- Email: `traveller@test.com`
-- Password: `Test123!`
-
-**Travel Arranger**
-- Email: `arranger@test.com`
-- Password: `Test123!`
-
-**Admin**
-- Email: `admin@test.com`
-- Password: `Test123!`
-
----
-
-## 🔧 Configuration
-
-### Frontend Environment Variables
-
-Create `/.env`:
-
-```bash
+**Frontend** (`.env`):
+```env
 VITE_API_URL=http://localhost:3000/api/v1
 VITE_WS_URL=http://localhost:3000
 ```
 
-### Backend Environment Variables
-
-See `/backend/.env.example` for all options. Key variables:
-
-```bash
+**Backend** (`backend/.env`):
+```env
 # Database
-DB_HOST=postgres
-DB_PORT=5432
-DB_USERNAME=cobt_user
-DB_PASSWORD=secure_password
-DB_DATABASE=cobt_db
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/cobt
 
 # JWT
-JWT_SECRET=your_secret_here
-JWT_REFRESH_SECRET=your_refresh_secret
+JWT_SECRET=your-secret-key
+JWT_EXPIRES_IN=1d
+REFRESH_TOKEN_SECRET=your-refresh-secret
+REFRESH_TOKEN_EXPIRES_IN=7d
 
-# Amadeus (Get from https://developers.amadeus.com)
-AMADEUS_CLIENT_ID=your_client_id
-AMADEUS_CLIENT_SECRET=your_client_secret
-AMADEUS_HOSTNAME=test.api.amadeus.com
+# Amadeus (optional for live data)
+AMADEUS_API_KEY=your-key
+AMADEUS_API_SECRET=your-secret
 
-# Paystack (Get from https://dashboard.paystack.com)
-PAYSTACK_SECRET_KEY=sk_test_xxx
-PAYSTACK_PUBLIC_KEY=pk_test_xxx
-PAYSTACK_WEBHOOK_SECRET=your_webhook_secret
+# Paystack (optional for payments)
+PAYSTACK_SECRET_KEY=your-secret-key
+PAYSTACK_PUBLIC_KEY=your-public-key
+```
 
-# CORS
-CORS_ORIGIN=http://localhost:5173
-FRONTEND_URL=http://localhost:5173
+### Available Scripts
+
+```bash
+# Frontend
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run preview      # Preview production build
+
+# Backend
+cd backend
+docker-compose up -d    # Start all services
+docker-compose down     # Stop all services
+docker-compose logs -f  # View logs
 ```
 
 ---
 
-## 📖 Documentation
+## 🐛 Troubleshooting
 
-- **[Frontend Integration Guide](./FRONTEND_INTEGRATION.md)** - Frontend-backend integration status
-- **[Backend README](./backend/README.md)** - Backend features and setup
-- **[Deployment Guide](./backend/DEPLOYMENT.md)** - Production deployment
-- **[API Integration](./backend/INTEGRATION.md)** - API usage examples
-- **[Quick Start](./backend/QUICKSTART.md)** - Get running in 5 minutes
+### Backend Not Reachable?
+
+1. **Check backend status:**
+   ```bash
+   curl http://localhost:3000/api/v1/health
+   ```
+
+2. **Start backend if needed:**
+   ```bash
+   cd backend
+   docker-compose up -d
+   ```
+
+3. **Check logs:**
+   ```bash
+   cd backend
+   docker-compose logs -f app
+   ```
+
+4. **Verify containers:**
+   ```bash
+   docker-compose ps
+   ```
+
+### Frontend Issues?
+
+1. **Check .env file exists:**
+   ```bash
+   cat .env
+   ```
+
+2. **Restart dev server:**
+   ```bash
+   # Stop with Ctrl+C, then:
+   npm run dev
+   ```
+
+3. **Clear cache:**
+   ```bash
+   rm -rf node_modules/.vite
+   npm run dev
+   ```
+
+### Port Conflicts?
+
+```bash
+# Check what's using port 3000
+lsof -i :3000
+
+# Check what's using port 5173
+lsof -i :5173
+```
+
+**More help:** [BACKEND_CONNECTION_FIX.md](./BACKEND_CONNECTION_FIX.md)
 
 ---
 
-## 🔌 API Endpoints
+## 📖 API Documentation
 
-### Authentication
-```
-POST   /api/v1/auth/register       # Register user
-POST   /api/v1/auth/login          # Login
-POST   /api/v1/auth/refresh        # Refresh token
-POST   /api/v1/auth/logout         # Logout
-```
+When backend is running, visit:
+- **Swagger UI:** http://localhost:3000/api/docs
 
-### Search
-```
-GET    /api/v1/search/flights      # Search flights
-GET    /api/v1/search/hotels       # Search hotels
-```
+### Example API Call
 
-### Bookings
+```bash
+# Search for flights
+curl -X POST http://localhost:3000/api/v1/search/flights \
+  -H "Content-Type: application/json" \
+  -d '{
+    "origin": "LOS",
+    "destination": "ABV",
+    "departureDate": "2026-04-01",
+    "adults": 1
+  }'
 ```
-POST   /api/v1/bookings            # Create booking
-GET    /api/v1/bookings            # Get all bookings
-GET    /api/v1/bookings/pending    # Get pending approvals
-GET    /api/v1/bookings/:id        # Get booking details
-PATCH  /api/v1/bookings/:id/approve    # Approve booking
-PATCH  /api/v1/bookings/:id/reject     # Reject booking
-```
-
-### Payments
-```
-POST   /api/v1/payments/initialize     # Initialize payment
-GET    /api/v1/payments/verify/:ref    # Verify payment
-POST   /api/v1/payments/webhook        # Paystack webhook
-```
-
-Full API documentation: http://localhost:3000/api/docs
 
 ---
 
 ## 🧪 Testing
 
-### Backend Tests
+### Test Backend Connection
 
+Visit: **http://localhost:5173/backend-test**
+
+Or use the script:
 ```bash
-cd backend
-
-# Unit tests
-npm run test
-
-# E2E tests
-npm run test:e2e
-
-# Coverage
-npm run test:cov
+./check-backend.sh
 ```
 
-### Frontend Tests
+### Demo Accounts
 
-```bash
-# Run tests
-npm run test
-```
-
-### Manual Testing
-
-1. **Login Flow**: Test with demo accounts
-2. **Flight Search**: Search LOS → LHR
-3. **Booking Creation**: Create a complete booking
-4. **Approval**: Approve booking as arranger
-5. **Payment**: Test Paystack integration
-6. **Real-time**: Check WebSocket notifications
-
----
-
-## 🚢 Deployment
-
-### Frontend (Vercel/Netlify)
-
-```bash
-# Build
-npm run build
-
-# Deploy to Vercel
-vercel deploy
-
-# Or Netlify
-netlify deploy --prod
-```
-
-### Backend (VPS/Cloud)
-
-```bash
-cd backend
-
-# Run deployment script
-chmod +x deploy.sh
-sudo ./deploy.sh
-```
-
-See [DEPLOYMENT.md](./backend/DEPLOYMENT.md) for detailed instructions.
+| Role | Username | Password |
+|------|----------|----------|
+| Traveller | traveller@test.com | Test123! |
+| Arranger | arranger@test.com | Test123! |
+| Admin | admin@test.com | Test123! |
 
 ---
 
 ## 🎨 Customization
 
-### Branding
+The system supports company branding:
+- Upload company logo
+- Customize color scheme
+- Set currency (₦ Naira by default)
+- Configure approval workflows
+- Define travel policies
 
-1. Login as **Admin**
-2. Navigate to **Company Settings**
-3. Upload your company logo
-4. Customize colors and theme
-5. Changes apply to all users
-
-### White-labeling
-
-The system is designed for multi-tenancy. Companies can:
-- Upload custom logos
-- Set brand colors
-- Configure company policies
-- Set budget limits
-- Customize approval workflows
+**White background with neutral colors** - ready for client customization!
 
 ---
 
-## 📊 Kafka Events
+## 📦 Deployment
 
-The system uses event-driven architecture:
-
-### Booking Events
-```javascript
-{
-  eventType: 'booking-created',
-  bookingId: 'uuid',
-  userId: 'uuid',
-  amount: 245000,
-  timestamp: '2026-03-03T10:00:00Z'
-}
+### Frontend
+```bash
+npm run build
+# Deploy /dist folder to your hosting service
 ```
 
-### Payment Events
-```javascript
-{
-  eventType: 'payment-success',
-  paymentId: 'uuid',
-  bookingId: 'uuid',
-  amount: 245000,
-  timestamp: '2026-03-03T10:05:00Z'
-}
+### Backend
+```bash
+cd backend
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```
 
----
-
-## 🔒 Security
-
-- ✅ JWT authentication with refresh tokens
-- ✅ Password hashing with bcrypt
-- ✅ HTTPS/TLS encryption
-- ✅ CORS protection
-- ✅ Rate limiting
-- ✅ SQL injection prevention
-- ✅ XSS protection
-- ✅ Helmet security headers
-- ✅ Input validation
-- ✅ Webhook signature verification
+See [DEPLOYMENT.md](./backend/DEPLOYMENT.md) for details.
 
 ---
 
-## 🤝 Contributing
+## 🤝 Support
 
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open Pull Request
+### Documentation
+- [START_APPLICATION.md](./START_APPLICATION.md) - Getting started
+- [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) - Common issues
+- [BACKEND_SETUP.md](./BACKEND_SETUP.md) - Backend guide
+
+### System Status
+- **UI:** http://localhost:5173/system-status
+- **CLI:** `./check-backend.sh`
 
 ---
 
 ## 📝 License
 
-Proprietary - BTMTravel © 2026
+Proprietary - BTMTravel
 
 ---
 
-## 🆘 Support
+## 🎉 Success Checklist
 
-For issues and questions:
+- [ ] Backend running: `curl http://localhost:3000/api/v1/health`
+- [ ] Frontend running: `npm run dev`
+- [ ] Browser opens: http://localhost:5173
+- [ ] "Backend connected" shows green on login
+- [ ] Can click demo login buttons
+- [ ] No errors in browser console
 
-- **Email**: support@btmtravel.com
-- **Documentation**: Full docs in `/backend` folder
-- **API Docs**: http://localhost:3000/api/docs
-- **Issues**: GitHub Issues
-
----
-
-## 🎯 Roadmap
-
-- [ ] Mobile app (React Native)
-- [ ] Multi-currency support
-- [ ] Expense management
-- [ ] Travel policy automation
-- [ ] Integration with accounting systems
-- [ ] AI-powered travel recommendations
-- [ ] Carbon footprint tracking
-- [ ] Group bookings
-- [ ] Travel insurance
+**All green?** You're ready to go! 🚀
 
 ---
 
-## 👥 Team
-
-**BTMTravel Development Team**
-
-- Product Manager
-- Backend Developers
-- Frontend Developers
-- DevOps Engineers
-- QA Engineers
-
----
-
-## 🙏 Acknowledgments
-
-- **Amadeus** for travel API
-- **Paystack** for payment processing
-- **NestJS** for backend framework
-- **React** for frontend framework
-- **Radix UI** for component library
-
----
-
-**Built with ❤️ by BTMTravel**
+**Last Updated:** March 5, 2026  
+**Status:** ✅ All errors fixed, ready to use

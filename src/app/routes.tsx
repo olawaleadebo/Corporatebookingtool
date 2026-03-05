@@ -13,11 +13,21 @@ import { FlightResults } from './pages/FlightResults';
 import { HotelSearch } from './pages/HotelSearch';
 import { CarRental } from './pages/CarRental';
 import { BookingSummary } from './pages/BookingSummary';
+import { BackendTest } from './pages/BackendTest';
+import SystemStatus from './pages/SystemStatus';
 
 export const router = createBrowserRouter([
   {
     path: '/',
     Component: Login,
+  },
+  {
+    path: '/backend-test',
+    Component: BackendTest,
+  },
+  {
+    path: '/system-status',
+    Component: SystemStatus,
   },
   {
     path: '/traveller',

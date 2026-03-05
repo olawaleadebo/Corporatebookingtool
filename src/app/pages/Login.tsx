@@ -47,8 +47,12 @@ export function Login() {
     setIsLoading(true);
 
     try {
+      console.log('🔐 Attempting login with:', { email, password: '***' });
+      console.log('🌐 API Base URL:', import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1');
+      
       const { user } = await authService.login({ email, password });
       
+      console.log('✅ Login successful:', user);
       toast.success(`Welcome back, ${user.firstName}!`);
 
       // Redirect based on role
@@ -62,14 +66,17 @@ export function Login() {
         navigate('/traveller');
       }
     } catch (error: any) {
-      console.error('Login failed:', error);
+      console.error('❌ Login failed:', error);
+      console.error('❌ Error response:', error.response?.data);
+      console.error('❌ Error status:', error.response?.status);
+      console.error('❌ Error message:', error.message);
       
       if (error.code === 'ERR_NETWORK') {
         toast.error('Cannot connect to backend server. Please ensure it is running.');
         setBackendStatus('offline');
       } else {
-        const message = error.response?.data?.message || 'Login failed. Please check your credentials.';
-        toast.error(message);
+        const message = error.response?.data?.message || error.message || 'Login failed. Please check your credentials.';
+        toast.error(Array.isArray(message) ? message.join(', ') : message);
       }
     } finally {
       setIsLoading(false);
@@ -225,6 +232,27 @@ export function Login() {
                   </Button>
                 </>
               )}
+            </div>
+
+            {/* Backend Test Links */}
+            <div className="text-center pt-2 space-x-2">
+              <Button
+                variant="link"
+                size="sm"
+                className="text-xs text-gray-500 hover:text-orange-500"
+                onClick={() => navigate('/backend-test')}
+              >
+                Backend Test
+              </Button>
+              <span className="text-gray-300">•</span>
+              <Button
+                variant="link"
+                size="sm"
+                className="text-xs text-gray-500 hover:text-orange-500"
+                onClick={() => navigate('/system-status')}
+              >
+                System Status
+              </Button>
             </div>
           </CardContent>
         </Card>

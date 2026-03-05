@@ -1,20 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
-import { ArrowLeft, Hotel, Star, MapPin, Wifi, Coffee, Car, UtensilsCrossed } from 'lucide-react';
-
-interface HotelOption {
-  id: string;
-  name: string;
-  rating: number;
-  location: string;
-  distance: string;
-  amenities: string[];
-  image: string;
-  price: number;
-  pricePerNight: number;
-}
+import { ArrowLeft, Hotel as HotelIcon, Star, MapPin, Wifi, Coffee, Car, UtensilsCrossed, Loader2 } from 'lucide-react';
+import { searchService, type Hotel } from '../../services/search.service';
+import { toast } from 'sonner';
 
 export function HotelSearch() {
   const navigate = useNavigate();
@@ -23,69 +13,64 @@ export function HotelSearch() {
   const flight = bookingState?.flight;
   const searchParams = bookingState?.searchParams;
 
-  const [selectedHotel, setSelectedHotel] = useState<HotelOption | null>(null);
+  const [selectedHotel, setSelectedHotel] = useState<any>(null);
+  const [hotels, setHotels] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Calculate nights (sample calculation)
-  const nights = 2;
+  // Calculate nights from search params
+  const calculateNights = () => {
+    if (!searchParams?.departureDate || !searchParams?.returnDate) return 2;
+    const checkIn = new Date(searchParams.departureDate);
+    const checkOut = new Date(searchParams.returnDate);
+    const diffTime = Math.abs(checkOut.getTime() - checkIn.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays || 2;
+  };
 
-  // Sample hotel data based on destination
-  const hotels: HotelOption[] = [
-    {
-      id: 'HOT001',
-      name: 'Transcorp Hilton Abuja',
-      rating: 5,
-      location: 'Central Business District',
-      distance: '5.2 km from airport',
-      amenities: ['Free WiFi', 'Restaurant', 'Pool', 'Gym', 'Parking'],
-      image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=80',
-      pricePerNight: 65000,
-      price: 65000 * nights
-    },
-    {
-      id: 'HOT002',
-      name: 'Sheraton Abuja Hotel',
-      rating: 5,
-      location: 'Ladi Kwali',
-      distance: '3.8 km from airport',
-      amenities: ['Free WiFi', 'Restaurant', 'Pool', 'Bar', 'Spa'],
-      image: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=400&q=80',
-      pricePerNight: 58000,
-      price: 58000 * nights
-    },
-    {
-      id: 'HOT003',
-      name: 'Fraser Suites Abuja',
-      rating: 4,
-      location: 'Central Business District',
-      distance: '6.1 km from airport',
-      amenities: ['Free WiFi', 'Kitchenette', 'Gym', 'Restaurant'],
-      image: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=400&q=80',
-      pricePerNight: 48000,
-      price: 48000 * nights
-    },
-    {
-      id: 'HOT004',
-      name: 'BON Hotel Abuja',
-      rating: 4,
-      location: 'Asokoro',
-      distance: '4.5 km from airport',
-      amenities: ['Free WiFi', 'Restaurant', 'Bar', 'Conference'],
-      image: 'https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=400&q=80',
-      pricePerNight: 42000,
-      price: 42000 * nights
-    },
-    {
-      id: 'HOT005',
-      name: 'Hawthorn Suites by Wyndham',
-      rating: 4,
-      location: 'Maitama',
-      distance: '7.2 km from airport',
-      amenities: ['Free WiFi', 'Breakfast', 'Pool', 'Parking'],
-      image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&q=80',
-      pricePerNight: 38000,
-      price: 38000 * nights
-    }
-  ];
+  const nights = calculateNights();
+
+  // Fetch hotels from backend
+  useEffect(() => {
+    const fetchHotels = async () => {
+      if (!flight?.arrival?.city) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        const cityCode = flight.arrival.airport || flight.arrival.city.substring(0, 3).toUpperCase();
+        const checkInDate = searchParams?.departureDate || new Date().toISOString().split('T')[0];
+        const checkOutDate = searchParams?.returnDate || new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+        const results = await searchService.searchHotels({
+          cityCode,
+          checkInDate,
+          checkOutDate,
+          adults: searchParams?.passengers?.adults || 1,
+        });
+
+        // Transform backend hotel data to match our UI format
+        const transformedHotels = results.map((hotel: Hotel) => ({
+          ...hotel,
+          pricePerNight: Math.round(hotel.price / nights),
+          distance: '5 km from city center',
+          amenities: ['Free WiFi', 'Restaurant', 'Pool', 'Parking'],
+          image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=80',
+        }));
+
+        setHotels(transformedHotels);
+      } catch (error: any) {
+        console.error('Hotel search error:', error);
+        toast.error(error.message || 'Failed to search hotels');
+        setHotels([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchHotels();
+  }, [flight, searchParams, nights]);
 
   const getAmenityIcon = (amenity: string) => {
     if (amenity.includes('WiFi')) return <Wifi className="w-4 h-4" />;

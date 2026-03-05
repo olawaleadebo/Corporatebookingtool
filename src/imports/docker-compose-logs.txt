@@ -1,0 +1,116 @@
+g="C:\\Users\\DELL\\OneDrive\\Desktop\\cobt\\Corporatebookingtool\\backend\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+[+] down 5/6
+ ✔ Container cobt-nginx     Removed              
+             0.7s
+ ✔ Container cobt-api       Removed              
+             1.7s
+ ✔ Container cobt-kafka     Removed              
+[+] down 7/7 1.9s
+ ✔ Container cobt-nginx         Removed      0.7s
+ ✔ Container cobt-api           Removed      1.7s
+ ✔ Container cobt-kafka         Removed      1.9s
+ ✔ Container cobt-redis         Removed      0.7s
+ ✔ Container cobt-postgres      Removed      0.8s
+ ✔ Container cobt-zookeeper     Removed      1.0s
+ ✔ Network backend_cobt-network Removed      0.4s
+PS C:\Users\DELL\OneDrive\Desktop\cobt\Corporatebookingtool\backend> docker-compose build api
+time="2026-03-04T18:00:39+01:00" level=warning msg="C:\\Users\\DELL\\OneDrive\\Desktop\\cobt\\Corporatebookingtool\\backend\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+#1 [internal] load local bake definitions
+#1 reading from stdin 613B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 659B 0.0s done       
+#2 DONE 0.1s
+
+#3 [internal] load metadata for docker.io/library/node:18-alpine
+#3 ...
+
+#4 [auth] library/node:pull token for registry-1.docker.io
+#4 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/node:18-alpine
+#3 DONE 1.8s
+
+#5 [internal] load .dockerignore
+#5 transferring context: 2B done
+#5 DONE 0.0s
+
+#6 [internal] load build context
+#6 DONE 0.0s
+
+#7 [development 1/6] FROM docker.io/library/node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35cb9bc4b8ca09d9e
+#7 resolve docker.io/library/node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35cb9bc4b8ca09d9e 0.0s done
+#7 DONE 0.1s
+
+#6 [internal] load build context
+#6 transferring context: 2.85MB 3.4s done
+#6 DONE 3.5s
+
+#8 [development 2/6] WORKDIR /app
+#8 CACHED
+
+#9 [development 3/6] COPY package*.json ./       
+#9 CACHED
+
+#10 [development 4/6] RUN npm ci
+#10 CACHED
+
+#11 [development 5/6] COPY . .
+#11 DONE 11.4s
+
+#12 [development 6/6] RUN npm run build
+#12 1.135 
+#12 1.135 > cobt-backend@1.0.0 prebuild
+#12 1.135 > rimraf dist
+#12 1.135
+#12 1.379 
+#12 1.379 > cobt-backend@1.0.0 build
+#12 1.379 > nest build
+#12 1.379
+#12 DONE 7.7s
+
+#13 [production 4/5] RUN npm ci --only=production && npm cache clean --force
+#13 CACHED
+
+#14 [production 5/5] COPY --from=development /app/dist ./dist
+#14 CACHED
+
+#15 exporting to image
+#15 exporting layers 0.0s done
+#15 exporting manifest sha256:2a5c00df40b511dc3378854a4aa49ab30e583f8d335d462b0abb8ad58613946d 0.0s done
+#15 exporting config sha256:7af4850cb12dd665f4e4ee835fc0f46d00f4132224f80bf3f34933b781edd462 0.0s done
+#15 exporting attestation manifest sha256:252f1a670d0c9d2d1dda3f9f25e3057d03e0b9398cddd6ef3bf5fe25cbdd06fe 0.1s done
+#15 exporting manifest list sha256:0b7ad49c49e042e145fe3e015d01c0b867e5e6442dbc1da8fb8ecc249daae4ce
+#15 exporting manifest list sha256:0b7ad49c49e042e145fe3e015d01c0b867e5e6442dbc1da8fb8ecc249daae4ce 0.0s done
+#15 naming to docker.io/library/backend-api:latest done
+#15 unpacking to docker.io/library/backend-api:latest 0.0s done
+#15 DONE 0.3s
+
+#16 resolving provenance for metadata file
+#16 DONE 0.1s
+[+] build 1/1
+ ✔ Image backend-api Built                  28.1s
+PS C:\Users\DELL\OneDrive\Desktop\cobt\Corporatebookingtool\backend> docker-compose up -d         
+time="2026-03-04T18:01:31+01:00" level=warning msg="C:\\Users\\DELL\\OneDrive\\Desktop\\cobt\\Corporatebookingtool\\backend\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+[+] up 7/7
+ ✔ Network backend_cobt-network Created     0.1ss
+ ✔ Container cobt-redis         Healthy     13.6s
+ ✔ Container cobt-zookeeper     Healthy     12.6s
+ ✔ Container cobt-postgres      Healthy     13.6s
+ ✔ Container cobt-kafka         Healthy     25.3s
+ ✔ Container cobt-api           Created     0.2ss
+ ✔ Container cobt-nginx         Created     0.3ss
+PS C:\Users\DELL\OneDrive\Desktop\cobt\Corporatebookingtool\backend> docker-compose logs api --tail=50
+time="2026-03-04T18:02:05+01:00" level=warning msg="C:\\Users\\DELL\\OneDrive\\Desktop\\cobt\\Corporatebookingtool\\backend\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+cobt-api  | {"level":"WARN","timestamp":"2026-03-04T17:01:59.947Z","logger":"kafkajs","message":"KafkaJS v2.0.0 switched default partitioner. To retain the same partitioning behavior as in previous versions, create the producer with the option \"createPartitioner: Partitioners.LegacyPartitioner\". See the migration guide at https://kafka.js.org/docs/migration-guide-v2.0.0#producer-new-default-partitioner for details. Silence this warning by setting the environment variable \"KAFKAJS_NO_PARTITIONER_WARNING=1\""}
+cobt-api  | 2026-03-04T17:02:00.218Z [KafkaProducerService] info: Kafka producer connected        
+cobt-api  | 2026-03-04T17:02:00.222Z [KafkaConsumerService] info: Kafka consumer connected        
+cobt-api  | {"level":"ERROR","timestamp":"2026-03-04T17:02:00.372Z","logger":"kafkajs","message":"[Connection] Response Metadata(key: 3, version: 6)","broker":"kafka:9092","clientId":"cobt-backend","error":"There is no leader for this topic-partition as we are in the middle of a leadership election","correlationId":1,"size":135}
+cobt-api  | {"level":"ERROR","timestamp":"2026-03-04T17:02:00.487Z","logger":"kafkajs","message":"[Connection] Response Metadata(key: 3, version: 6)","broker":"kafka:9092","clientId":"cobt-backend","error":"There is no leader for this topic-partition as we are in the middle of a leadership election","correlationId":2,"size":135}
+cobt-api  | {"level":"INFO","timestamp":"2026-03-04T17:02:00.645Z","logger":"kafkajs","message":"[Consumer] Starting","groupId":"cobt-consumer-group"}
+cobt-api  | {"level":"ERROR","timestamp":"2026-03-04T17:02:00.684Z","logger":"kafkajs","message":"[Connection] Response GroupCoordinator(key: 10, version: 2)","broker":"kafka:9092","clientId":"cobt-backend","error":"The group coordinator is not available","correlationId":4,"size":55}
+cobt-api  | {"level":"ERROR","timestamp":"2026-03-04T17:02:00.847Z","logger":"kafkajs","message":"[Connection] Response GroupCoordinator(key: 10, version: 2)","broker":"kafka:9092","clientId":"cobt-backend","error":"The group coordinator is not available","correlationId":5,"size":55}
+cobt-api  | {"level":"ERROR","timestamp":"2026-03-04T17:02:01.117Z","logger":"kafkajs","message":"[Connection] Response GroupCoordinator(key: 10, version: 2)","broker":"kafka:9092","clientId":"cobt-backend","error":"The group coordinator is not available","correlationId":6,"size":55}
+cobt-api  | {"level":"ERROR","timestamp":"2026-03-04T17:02:01.756Z","logger":"kafkajs","message":"[Connection] Response GroupCoordinator(key: 10, version: 2)","broker":"kafka:9092","clientId":"cobt-backend","error":"The group coordinator is not available","correlationId":7,"size":55}
+PS C:\Users\DELL\OneDrive\Desktop\cobt\Corporatebookingtool\backend>

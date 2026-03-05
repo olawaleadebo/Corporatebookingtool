@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
-import { ArrowLeft, Car, Users, Briefcase, Luggage, Snowflake, Settings } from 'lucide-react';
+import { ArrowLeft, Car, Users, Briefcase, Luggage, Snowflake, Settings, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface CarOption {
   id: string;
@@ -25,79 +26,43 @@ export function CarRental() {
   const searchParams = bookingState?.searchParams;
 
   const [selectedCar, setSelectedCar] = useState<CarOption | null>(null);
+  const [cars, setCars] = useState<CarOption[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Calculate rental days (sample calculation)
-  const rentalDays = 3;
-
-  // Sample car rental data
-  const cars: CarOption[] = [
-    {
-      id: 'CAR001',
-      name: 'Toyota Corolla',
-      category: 'Economy',
-      image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=400&q=80',
-      seats: 5,
-      transmission: 'Automatic',
-      features: ['Air Conditioning', 'Bluetooth', 'USB Ports'],
-      pricePerDay: 18000,
-      price: 18000 * rentalDays
-    },
-    {
-      id: 'CAR002',
-      name: 'Honda Accord',
-      category: 'Standard',
-      image: 'https://images.unsplash.com/photo-1590362891991-f776e747a588?w=400&q=80',
-      seats: 5,
-      transmission: 'Automatic',
-      features: ['Air Conditioning', 'Bluetooth', 'GPS Navigation'],
-      pricePerDay: 25000,
-      price: 25000 * rentalDays
-    },
-    {
-      id: 'CAR003',
-      name: 'Toyota Camry',
-      category: 'Premium',
-      image: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=400&q=80',
-      seats: 5,
-      transmission: 'Automatic',
-      features: ['Leather Seats', 'GPS', 'Premium Sound'],
-      pricePerDay: 32000,
-      price: 32000 * rentalDays
-    },
-    {
-      id: 'CAR004',
-      name: 'Toyota Prado',
-      category: 'SUV',
-      image: 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=400&q=80',
-      seats: 7,
-      transmission: 'Automatic',
-      features: ['4WD', 'Leather Seats', 'GPS', 'Spacious'],
-      pricePerDay: 45000,
-      price: 45000 * rentalDays
-    },
-    {
-      id: 'CAR005',
-      name: 'Mercedes E-Class',
-      category: 'Luxury',
-      image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=400&q=80',
-      seats: 5,
-      transmission: 'Automatic',
-      features: ['Luxury Interior', 'GPS', 'Premium Sound', 'Driver'],
-      pricePerDay: 65000,
-      price: 65000 * rentalDays
-    },
-    {
-      id: 'CAR006',
-      name: 'Toyota Hiace',
-      category: 'Van',
-      image: 'https://images.unsplash.com/photo-1527786356703-4b100091cd2c?w=400&q=80',
-      seats: 14,
-      transmission: 'Manual',
-      features: ['Air Conditioning', 'Spacious', 'Group Travel'],
-      pricePerDay: 55000,
-      price: 55000 * rentalDays
+  // Calculate rental days based on flight dates
+  const calculateRentalDays = () => {
+    if (searchParams?.departureDate && searchParams?.returnDate) {
+      const departure = new Date(searchParams.departureDate);
+      const returnDate = new Date(searchParams.returnDate);
+      const diffTime = Math.abs(returnDate.getTime() - departure.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays || 1;
     }
-  ];
+    return 3; // Default to 3 days
+  };
+
+  const rentalDays = calculateRentalDays();
+
+  // Fetch car rentals from API
+  useEffect(() => {
+    const fetchCars = async () => {
+      try {
+        setIsLoading(true);
+        // API call would go here - for now, just set empty array
+        // const results = await carService.searchCars({...});
+        // setCars(results);
+        setCars([]);
+      } catch (error: any) {
+        console.error('Car search error:', error);
+        toast.error(error.message || 'Failed to search car rentals');
+        setCars([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCars();
+  }, [searchParams, rentalDays]);
 
   const getFeatureIcon = (feature: string) => {
     if (feature.includes('Air Conditioning')) return <Snowflake className="w-4 h-4" />;
@@ -182,6 +147,14 @@ export function CarRental() {
 
         {/* Car Rental Results */}
         <div className="max-w-7xl mx-auto px-4 py-8">
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-20">
+              <Loader2 className="w-12 h-12 text-orange-500 animate-spin mb-4" />
+              <p className="text-white text-lg font-medium">Searching for car rentals...</p>
+              <p className="text-white/70 text-sm mt-2">Please wait while we find the best options for you</p>
+            </div>
+          ) : (
+            <>
           {/* Current Booking Summary */}
           <Card className="bg-white/95 backdrop-blur-sm border-gray-200 mb-6">
             <CardContent className="p-4">
@@ -205,6 +178,21 @@ export function CarRental() {
             </CardContent>
           </Card>
 
+          {cars.length === 0 ? (
+            <div className="text-center py-20">
+              <div className="bg-white/95 backdrop-blur-sm rounded-lg p-8 max-w-md mx-auto">
+                <Car className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No cars available</h3>
+                <p className="text-gray-600 mb-6">We couldn't find any car rentals at this time.</p>
+                <Button
+                  onClick={handleSkipCar}
+                  className="bg-orange-500 hover:bg-orange-600 text-white"
+                >
+                  Continue Without Car
+                </Button>
+              </div>
+            </div>
+          ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {cars.map((car) => (
               <Card 
@@ -281,6 +269,7 @@ export function CarRental() {
               </Card>
             ))}
           </div>
+          )}
 
           {/* Continue Button */}
           {selectedCar && (
@@ -304,6 +293,8 @@ export function CarRental() {
                 </CardContent>
               </Card>
             </div>
+          )}
+            </>
           )}
         </div>
       </div>

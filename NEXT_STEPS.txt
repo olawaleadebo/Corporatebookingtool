@@ -1,0 +1,131 @@
+================================================================================
+                      BTMTRAVEL COBT - NEXT STEPS
+================================================================================
+
+✅ ALL ERRORS FIXED!
+
+The application is ready. Follow these steps to start using it:
+
+
+STEP 1: START BACKEND
+================================================================================
+
+Open a terminal and run:
+
+    cd backend
+    docker-compose up -d
+
+Wait 30 seconds for services to start...
+
+
+STEP 2: VERIFY BACKEND
+================================================================================
+
+Run this command:
+
+    curl http://localhost:3000/api/v1/health
+
+You should see:
+
+    {"status":"ok","info":{"database":{"status":"up"},"kafka":{"status":"up"}}}
+
+If you get an error, wait a bit longer and try again.
+
+
+STEP 3: START FRONTEND
+================================================================================
+
+Open a NEW terminal and run:
+
+    npm run dev
+
+You should see:
+
+    VITE v... ready in ...
+    ➜  Local:   http://localhost:5173/
+
+
+STEP 4: OPEN BROWSER
+================================================================================
+
+Open your browser to:
+
+    http://localhost:5173
+
+You should see the login page with demo buttons.
+
+
+STEP 5: TEST THE APPLICATION
+================================================================================
+
+1. Click "Demo Login as Traveller"
+2. You'll see the Traveller Dashboard
+3. Click "Search Flights" or "New Booking"
+4. Try searching for a flight (e.g., Lagos → Abuja)
+
+
+================================================================================
+                           HELPFUL PAGES
+================================================================================
+
+System Status Monitor:
+    http://localhost:5173/system-status
+
+Backend Test Page:
+    http://localhost:5173/backend-test
+
+API Documentation:
+    http://localhost:3000/api/docs
+
+
+================================================================================
+                         TROUBLESHOOTING
+================================================================================
+
+If backend won't start:
+    cd backend
+    docker-compose logs -f
+
+If frontend shows "Backend not reachable":
+    1. Check: curl http://localhost:3000/api/v1/health
+    2. If fails, restart backend: docker-compose restart
+    3. Then restart frontend: npm run dev
+
+Quick health check:
+    chmod +x check-backend.sh
+    ./check-backend.sh
+
+
+================================================================================
+                          DOCUMENTATION
+================================================================================
+
+Quick Start Guide:       START_APPLICATION.md
+Error Fixes Summary:     README_ERRORS_FIXED.md
+Troubleshooting:         BACKEND_CONNECTION_FIX.md
+Full Documentation:      README.md
+
+
+================================================================================
+                         VERIFICATION CHECKLIST
+================================================================================
+
+Before reporting issues, verify:
+
+✓ Backend health check returns JSON
+✓ Docker containers all show "Up"
+✓ Frontend .env file exists
+✓ No port conflicts (3000, 5173)
+✓ Browser console has no errors
+
+
+================================================================================
+
+READY TO START! 🚀
+
+Run:  cd backend && docker-compose up -d
+Wait: 30 seconds
+Run:  npm run dev
+Open: http://localhost:5173
+
+================================================================================

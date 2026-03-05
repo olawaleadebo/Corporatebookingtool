@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -15,12 +15,18 @@ import {
   ArrowLeft,
   Lock,
   Calendar,
-  Building2
+  Building2,
+  Loader2
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { paymentService } from '../../services/payment.service';
+import { authService } from '../../services/auth.service';
 
 export function PaymentConfirmation() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const bookingData = location.state as any;
+  
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [processingPayment, setProcessingPayment] = useState(false);
 
@@ -40,18 +46,69 @@ export function PaymentConfirmation() {
     total: 1245
   };
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
+    if (!bookingData?.bookingId) {
+      toast.error('No booking ID found');
+      return;
+    }
+
     setProcessingPayment(true);
-    
-    // Simulate payment processing
-    setTimeout(() => {
-      toast.success('Payment processed successfully!');
+
+    try {
+      const user = authService.getCurrentUser();
+      if (!user) {
+        toast.error('User not authenticated');
+        navigate('/');
+        return;
+      }
+
+      // Initialize payment via Paystack
+      const paymentResponse = await paymentService.initializePayment({
+        bookingId: bookingData.bookingId,
+        email: user.email,
+      });
+
+      console.log('💳 Payment initialized:', paymentResponse);
+
+      // Redirect to Paystack payment page
+      if (paymentResponse.authorizationUrl) {
+        window.location.href = paymentResponse.authorizationUrl;
+      } else {
+        toast.error('Payment initialization failed');
+      }
+    } catch (error: any) {
+      console.error('Payment error:', error);
+      toast.error(error.message || 'Payment initialization failed');
       setProcessingPayment(false);
+    }
+  };
+
+  // Handle payment verification on return from Paystack
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const reference = params.get('reference');
+    
+    if (reference) {
+      verifyPayment(reference);
+    }
+  }, []);
+
+  const verifyPayment = async (reference: string) => {
+    try {
+      const result = await paymentService.verifyPayment(reference);
       
-      setTimeout(() => {
-        navigate('/traveller/bookings');
-      }, 1500);
-    }, 2000);
+      if (result.success) {
+        toast.success('Payment verified successfully!');
+        setTimeout(() => {
+          navigate('/traveller/bookings');
+        }, 1500);
+      } else {
+        toast.error(result.message || 'Payment verification failed');
+      }
+    } catch (error: any) {
+      console.error('Payment verification error:', error);
+      toast.error(error.message || 'Payment verification failed');
+    }
   };
 
   return (

@@ -1,28 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
-import { ArrowLeft, Plane, Clock, Calendar } from 'lucide-react';
-
-interface Flight {
-  id: string;
-  airline: string;
-  flightNumber: string;
-  departure: {
-    time: string;
-    airport: string;
-    city: string;
-  };
-  arrival: {
-    time: string;
-    airport: string;
-    city: string;
-  };
-  duration: string;
-  price: number;
-  stops: number;
-  class: string;
-}
+import { ArrowLeft, Plane, Clock, Calendar, Loader2 } from 'lucide-react';
+import { searchService, type Flight } from '../../services/search.service';
+import { toast } from 'sonner';
 
 export function FlightResults() {
   const navigate = useNavigate();
@@ -30,6 +12,8 @@ export function FlightResults() {
   const searchParams = location.state as any;
 
   const [selectedFlight, setSelectedFlight] = useState<Flight | null>(null);
+  const [flights, setFlights] = useState<Flight[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Calculate total passengers from the passengers object
   const getTotalPassengers = () => {
@@ -40,104 +24,37 @@ export function FlightResults() {
 
   const totalPassengers = getTotalPassengers();
 
-  // Sample flight data based on search
-  const flights: Flight[] = [
-    {
-      id: 'FL001',
-      airline: 'Air Peace',
-      flightNumber: 'P4 7101',
-      departure: {
-        time: '06:00',
-        airport: 'LOS',
-        city: searchParams?.from || 'Lagos'
-      },
-      arrival: {
-        time: '07:15',
-        airport: 'ABV',
-        city: searchParams?.to || 'Abuja'
-      },
-      duration: '1h 15m',
-      price: 85000,
-      stops: 0,
-      class: searchParams?.class || 'Economy'
-    },
-    {
-      id: 'FL002',
-      airline: 'Arik Air',
-      flightNumber: 'W3 302',
-      departure: {
-        time: '08:30',
-        airport: 'LOS',
-        city: searchParams?.from || 'Lagos'
-      },
-      arrival: {
-        time: '09:50',
-        airport: 'ABV',
-        city: searchParams?.to || 'Abuja'
-      },
-      duration: '1h 20m',
-      price: 78000,
-      stops: 0,
-      class: searchParams?.class || 'Economy'
-    },
-    {
-      id: 'FL003',
-      airline: 'Dana Air',
-      flightNumber: '9J 205',
-      departure: {
-        time: '11:00',
-        airport: 'LOS',
-        city: searchParams?.from || 'Lagos'
-      },
-      arrival: {
-        time: '12:20',
-        airport: 'ABV',
-        city: searchParams?.to || 'Abuja'
-      },
-      duration: '1h 20m',
-      price: 72000,
-      stops: 0,
-      class: searchParams?.class || 'Economy'
-    },
-    {
-      id: 'FL004',
-      airline: 'Air Peace',
-      flightNumber: 'P4 7105',
-      departure: {
-        time: '14:30',
-        airport: 'LOS',
-        city: searchParams?.from || 'Lagos'
-      },
-      arrival: {
-        time: '15:45',
-        airport: 'ABV',
-        city: searchParams?.to || 'Abuja'
-      },
-      duration: '1h 15m',
-      price: 88000,
-      stops: 0,
-      class: searchParams?.class || 'Economy'
-    },
-    {
-      id: 'FL005',
-      airline: 'Aero Contractors',
-      flightNumber: 'NG 130',
-      departure: {
-        time: '17:00',
-        airport: 'LOS',
-        city: searchParams?.from || 'Lagos'
-      },
-      arrival: {
-        time: '18:25',
-        airport: 'ABV',
-        city: searchParams?.to || 'Abuja'
-      },
-      duration: '1h 25m',
-      price: 75000,
-      stops: 0,
-      class: searchParams?.class || 'Economy'
-    }
-  ];
+  // Fetch flight data from backend
+  useEffect(() => {
+    const fetchFlights = async () => {
+      if (!searchParams?.from || !searchParams?.to || !searchParams?.departureDate) {
+        toast.error('Missing search parameters');
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        const results = await searchService.searchFlights({
+          origin: searchParams.from,
+          destination: searchParams.to,
+          departureDate: searchParams.departureDate,
+          returnDate: searchParams.returnDate,
+          adults: searchParams.passengers?.adults || 1,
+          travelClass: searchParams.class?.toUpperCase() || 'ECONOMY',
+        });
+        setFlights(results);
+      } catch (error: any) {
+        console.error('Flight search error:', error);
+        toast.error(error.message || 'Failed to search flights');
+        setFlights([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFlights();
+  }, [searchParams]);
 
   const handleSelectFlight = (flight: Flight) => {
     setSelectedFlight(flight);
@@ -192,9 +109,31 @@ export function FlightResults() {
 
         {/* Flight Results */}
         <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="space-y-4">
-            {flights.map((flight) => (
-              <Card 
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-20">
+              <Loader2 className="w-12 h-12 text-orange-500 animate-spin mb-4" />
+              <p className="text-white text-lg font-medium">Searching for flights...</p>
+              <p className="text-white/70 text-sm mt-2">Please wait while we find the best options for you</p>
+            </div>
+          ) : flights.length === 0 ? (
+            <div className="text-center py-20">
+              <div className="bg-white/95 backdrop-blur-sm rounded-lg p-8 max-w-md mx-auto">
+                <Plane className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No flights found</h3>
+                <p className="text-gray-600 mb-6">We couldn't find any flights matching your search criteria.</p>
+                <Button
+                  onClick={() => navigate('/traveller/search')}
+                  className="bg-orange-500 hover:bg-orange-600 text-white"
+                >
+                  Try Another Search
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="space-y-4">
+                {flights.map((flight) => (
+                <Card 
                 key={flight.id} 
                 className={`bg-white/95 backdrop-blur-sm border-2 transition-all cursor-pointer hover:shadow-lg ${
                   selectedFlight?.id === flight.id 
@@ -276,11 +215,11 @@ export function FlightResults() {
                   </div>
                 </CardContent>
               </Card>
-            ))}
-          </div>
+              ))}
+            </div>
 
-          {/* Continue Button */}
-          {selectedFlight && (
+            {/* Continue Button */}
+            {selectedFlight && (
             <div className="mt-8 flex justify-end">
               <Card className="bg-white/95 backdrop-blur-sm border-gray-200">
                 <CardContent className="p-6">
@@ -301,6 +240,8 @@ export function FlightResults() {
                 </CardContent>
               </Card>
             </div>
+            )}
+            </>
           )}
         </div>
       </div>

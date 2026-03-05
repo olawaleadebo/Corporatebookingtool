@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
@@ -15,85 +15,47 @@ import {
   Download,
   Eye,
   Calendar,
-  DollarSign
+  DollarSign,
+  Loader2
 } from 'lucide-react';
+import { bookingService, type Booking } from '../../services/booking.service';
+import { toast } from 'sonner';
 
 export function MyBookings() {
   const navigate = useNavigate();
   const [selectedTab, setSelectedTab] = useState('all');
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const bookings = [
-    {
-      id: 1,
-      type: 'flight',
-      title: 'New York to London',
-      airline: 'British Airways',
-      date: '2026-03-15',
-      returnDate: '2026-03-20',
-      status: 'approved',
-      amount: 1245,
-      bookingRef: 'BA12345',
-      costCenter: 'Marketing',
-      approver: 'Jane Smith',
-      approvedDate: '2026-02-28'
-    },
-    {
-      id: 2,
-      type: 'hotel',
-      title: 'Hilton London',
-      location: 'London, UK',
-      date: '2026-03-15',
-      returnDate: '2026-03-20',
-      status: 'pending',
-      amount: 890,
-      bookingRef: 'PENDING',
-      costCenter: 'Marketing',
-      submittedDate: '2026-03-01'
-    },
-    {
-      id: 3,
-      type: 'car',
-      title: 'Toyota Corolla',
-      location: 'London Heathrow',
-      date: '2026-03-15',
-      returnDate: '2026-03-20',
-      status: 'rejected',
-      amount: 320,
-      bookingRef: 'N/A',
-      costCenter: 'Marketing',
-      rejectedBy: 'Jane Smith',
-      rejectedDate: '2026-03-01',
-      rejectionReason: 'Over budget for ground transportation'
-    },
-    {
-      id: 4,
-      type: 'flight',
-      title: 'London to Paris',
-      airline: 'Air France',
-      date: '2026-04-10',
-      returnDate: '2026-04-12',
-      status: 'approved',
-      amount: 450,
-      bookingRef: 'AF67890',
-      costCenter: 'Sales',
-      approver: 'Mike Johnson',
-      approvedDate: '2026-03-02'
-    },
-    {
-      id: 5,
-      type: 'hotel',
-      title: 'Hotel de Paris',
-      location: 'Paris, France',
-      date: '2026-04-10',
-      returnDate: '2026-04-12',
-      status: 'approved',
-      amount: 380,
-      bookingRef: 'HP12345',
-      costCenter: 'Sales',
-      approver: 'Mike Johnson',
-      approvedDate: '2026-03-02'
-    },
-  ];
+  // Fetch bookings from backend
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        setIsLoading(true);
+        const data = await bookingService.getBookings();
+        setBookings(data);
+      } catch (error: any) {
+        console.error('Failed to fetch bookings:', error);
+        toast.error(error.message || 'Failed to load bookings');
+        setBookings([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchBookings();
+
+    // Listen for booking updates via WebSocket
+    const handleBookingUpdate = (event: any) => {
+      const updatedBooking = event.detail;
+      setBookings(prev => 
+        prev.map(b => b.id === updatedBooking.id ? { ...b, ...updatedBooking } : b)
+      );
+    };
+
+    window.addEventListener('booking-updated', handleBookingUpdate);
+    return () => window.removeEventListener('booking-updated', handleBookingUpdate);
+  }, []);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
