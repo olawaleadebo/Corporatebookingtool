@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { WinstonModule } from 'nest-winston';
@@ -13,6 +13,7 @@ import { PolicyModule } from './modules/policy/policy.module';
 import { KafkaModule } from './modules/kafka/kafka.module';
 import { WebsocketModule } from './modules/websocket/websocket.module';
 import { HealthModule } from './modules/health/health.module';
+import { RequestLoggerMiddleware } from './middleware/request-logger.middleware';
 
 @Module({
   imports: [
@@ -66,8 +67,7 @@ import { HealthModule } from './modules/health/health.module';
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: configService.get('NODE_ENV') === 'development',
         logging: configService.get('NODE_ENV') === 'development',
-        // ssl: configService.get('NODE_ENV') === 'production' ? { rejectUnauthorized: false } : false,
-        ssl:false
+        ssl: configService.get('NODE_ENV') === 'production' ? { rejectUnauthorized: false } : false,
       }),
     }),
 
@@ -84,4 +84,9 @@ import { HealthModule } from './modules/health/health.module';
     HealthModule,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    // Apply request logger to all routes for debugging
+    consumer.apply(RequestLoggerMiddleware).forRoutes('*');
+  }
+}

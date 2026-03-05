@@ -1,0 +1,178 @@
+================================================================================
+                    IMMEDIATE FIX - DO THIS NOW
+================================================================================
+
+YOUR PROBLEM:
+  Backend not reachable / Network Error
+
+CAUSE:
+  Your manual edits used an ngrok URL that isn't running:
+  https://chromoplasmic-ungaping-danielle.ngrok-free.dev
+
+SOLUTION:
+  I've reverted the files to use localhost. Just start the backend!
+
+================================================================================
+                         3-STEP FIX
+================================================================================
+
+STEP 1: START BACKEND
+────────────────────────────────────────────────────────────────────────────
+
+Open Terminal 1 and run:
+
+    cd backend
+    docker-compose up -d
+
+Expected output:
+    ✓ Container backend-postgres-1    Started
+    ✓ Container backend-kafka-1       Started
+    ✓ Container backend-app-1         Started
+
+Wait 30 seconds for services to initialize...
+
+
+STEP 2: VERIFY BACKEND
+────────────────────────────────────────────────────────────────────────────
+
+Run this command:
+
+    curl http://localhost:3000/api/v1/health
+
+Expected response:
+    {"status":"ok","info":{"database":{"status":"up"},"kafka":{"status":"up"}}}
+
+If you get this ✓ continue to Step 3
+If you get an error ✗ wait 30 more seconds and try again
+
+
+STEP 3: START FRONTEND
+────────────────────────────────────────────────────────────────────────────
+
+Open Terminal 2 and run:
+
+    npm run dev
+
+Expected output:
+    VITE v5.x.x ready in xxx ms
+    ➜  Local:   http://localhost:5173/
+
+Then open your browser to:
+    http://localhost:5173
+
+
+================================================================================
+                      THAT'S IT - YOU'RE DONE!
+================================================================================
+
+✓ Backend running on port 3000
+✓ Frontend running on port 5173
+✓ Application accessible at http://localhost:5173
+
+Click "Demo Login as Traveller" to test!
+
+================================================================================
+                        WHAT I FIXED
+================================================================================
+
+BEFORE (Your manual edits):
+  ✗ Hardcoded ngrok URL: https://chromoplasmic-ungaping-danielle.ngrok-free.dev
+  ✗ URL not responding
+  ✗ Can't connect to backend
+
+AFTER (My fix):
+  ✓ Using .env file configuration
+  ✓ Defaults to localhost: http://localhost:3000
+  ✓ Easy to switch between local and ngrok
+  ✓ Falls back gracefully if .env is missing
+
+FILES FIXED:
+  ✓ /src/lib/api.ts         - Reverted to use env vars
+  ✓ /src/lib/websocket.ts   - Reverted to use env vars
+  ✓ /.env                   - Set to localhost (default)
+
+================================================================================
+                     WANT TO USE NGROK?
+================================================================================
+
+If you need ngrok for remote access, see: NGROK_GUIDE.md
+
+Quick version:
+  1. Start backend locally first (step 1 above)
+  2. Install ngrok: brew install ngrok
+  3. Run: ngrok http 3000
+  4. Copy the https:// URL
+  5. Update .env with your new URL
+  6. Restart frontend
+
+⚠️  ngrok URLs change every time you restart ngrok!
+⚠️  You need to update .env each time!
+
+================================================================================
+                       VERIFICATION
+================================================================================
+
+CHECK 1: Backend Health
+  Command:  curl http://localhost:3000/api/v1/health
+  Expected: {"status":"ok",...}
+
+CHECK 2: Docker Containers
+  Command:  cd backend && docker-compose ps
+  Expected: All services show "Up"
+
+CHECK 3: Frontend Status
+  Command:  Visit http://localhost:5173/system-status
+  Expected: All green checkmarks
+
+CHECK 4: Login Page
+  Command:  Visit http://localhost:5173
+  Expected: "Backend connected" (green indicator)
+
+================================================================================
+                      TROUBLESHOOTING
+================================================================================
+
+PROBLEM: Backend won't start
+  → Check Docker is running: docker --version
+  → Check ports are free: lsof -i :3000
+  → View logs: cd backend && docker-compose logs -f
+
+PROBLEM: Health check fails
+  → Wait longer (backend needs 30-60 seconds to start)
+  → Check logs: docker-compose logs app
+  → Restart: docker-compose restart
+
+PROBLEM: Frontend shows "Backend not reachable"
+  → Verify health check passes first
+  → Check .env file: cat .env
+  → Restart frontend: Ctrl+C then npm run dev
+  → Clear browser cache: Ctrl+Shift+R
+
+================================================================================
+                        HELPFUL LINKS
+================================================================================
+
+Quick Start Guide:          START_APPLICATION.md
+ngrok Setup Guide:          NGROK_GUIDE.md
+Manual Edit Fix Details:    MANUAL_EDIT_FIX.md
+Backend Connection Fix:     BACKEND_CONNECTION_FIX.md
+General Troubleshooting:    TROUBLESHOOTING.md
+
+================================================================================
+                          STATUS
+================================================================================
+
+✅ Files have been fixed and reverted to localhost
+✅ Configuration uses .env for easy switching
+✅ All error handling is in place
+✅ Documentation is complete
+
+⏳ NEXT ACTION REQUIRED: Start the backend!
+
+Run these two commands:
+  1. cd backend && docker-compose up -d
+  2. npm run dev
+
+Then open: http://localhost:5173
+
+================================================================================

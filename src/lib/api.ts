@@ -1,27 +1,44 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { toast } from 'sonner';
+import { API_CONFIG } from '../config/api.config';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1';
+// 🔥 HARDCODED NGROK URL FOR TESTING
+const HARDCODED_NGROK_URL = 'https://chromoplasmic-ungaping-danielle.ngrok-free.dev/api/v1';
+
+console.log('🔥 USING HARDCODED NGROK URL:', HARDCODED_NGROK_URL);
 
 // Create axios instance
 export const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: HARDCODED_NGROK_URL, // Using hardcoded URL instead of API_CONFIG.API_BASE_URL
   headers: {
     'Content-Type': 'application/json',
+    'ngrok-skip-browser-warning': 'true',
+    'User-Agent': 'BTMTravel-COBT',
   },
-  timeout: 30000, // 30 seconds
+  timeout: 30000,
 });
 
-// Request interceptor - Add auth token
+// Request interceptor - Add auth token and ngrok headers
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
+    // Log the full request URL
+    const fullUrl = `${config.baseURL}${config.url}`;
+    console.log('🌐 Making request to:', fullUrl);
+    console.log('📋 Request headers:', config.headers);
+    
     const token = localStorage.getItem('accessToken');
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    // Add ngrok header to skip browser warning
+    if (config.headers) {
+      config.headers['ngrok-skip-browser-warning'] = 'true';
+      config.headers['User-Agent'] = 'BTMTravel-COBT';
+    }
     return config;
   },
   (error) => {
+    console.error('❌ Request interceptor error:', error);
     return Promise.reject(error);
   }
 );
@@ -34,14 +51,19 @@ api.interceptors.response.use(
 
     // Handle network errors (backend not reachable)
     if (!error.response) {
+      // Log the error details
+      console.error('❌ Network Error Details:');
+      console.error('   Error code:', error.code);
+      console.error('   Error message:', error.message);
+      console.error('   Request URL:', originalRequest.url);
+      console.error('   Base URL:', originalRequest.baseURL);
+      console.error('   Full URL:', `${originalRequest.baseURL}${originalRequest.url}`);
+      
       // Silently fail for health checks - no console errors
       if (originalRequest.url?.includes('/health')) {
         return Promise.reject(error);
       }
-      
-      // Log only for non-health check requests
-      console.error('Backend not reachable');
-      
+
       // Show user-friendly toast
       toast.error('Cannot connect to server. Please ensure the backend is running.');
       return Promise.reject(error);
@@ -58,8 +80,12 @@ api.interceptors.response.use(
           throw new Error('No refresh token available');
         }
 
-        const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {
+        const response = await axios.post(`${HARDCODED_NGROK_URL}/auth/refresh`, {
           refreshToken,
+        }, {
+          headers: {
+            'ngrok-skip-browser-warning': 'true',
+          },
         });
 
         const { accessToken, refreshToken: newRefreshToken } = response.data;

@@ -1,18 +1,10 @@
-import { IsString, IsNumber, IsOptional, IsObject, Min, IsEnum } from 'class-validator';
+import { IsString, IsNumber, IsOptional, IsObject, Min } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { BookingType } from '../entities/booking.entity';
 
 export class CreateBookingDto {
-  // @ApiProperty({ description: 'Booking type', example: 'combined' })
-  // @IsString()
-  // type: string;
-  @IsEnum(BookingType)
-  @ApiProperty({
-    description: 'Booking type',
-    enum: BookingType,
-    example: BookingType.COMBINED,
-  })
-  type: BookingType;
+  @ApiProperty({ description: 'Booking type', example: 'combined' })
+  @IsString()
+  type: string;
 
   @ApiProperty({ description: 'Flight details' })
   @IsOptional()

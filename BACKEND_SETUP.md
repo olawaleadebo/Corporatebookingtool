@@ -1,42 +1,126 @@
-# 🚨 Backend Not Running - Quick Fix
+# Backend Connection Setup Guide
 
-## The Error You're Seeing
+## 🚨 Critical: Backend Must Be Running with Ngrok
 
-```
-Login failed: AxiosError: Network Error
-```
+This Figma Make app **requires** your NestJS backend to be running and accessible through ngrok.
 
-This means the **backend server is not running**. The frontend cannot connect to the API.
+## Step-by-Step Setup
 
----
-
-## ✅ Quick Solution (5 minutes)
-
-### Option 1: Using Docker (Recommended)
+### 1. Start Your Backend Server
 
 ```bash
-# 1. Open a new terminal and navigate to backend folder
 cd backend
-
-# 2. Copy environment file (if not done already)
-cp .env.example .env
-
-# 3. Start all services with Docker
-docker-compose up -d
-
-# 4. Wait about 30 seconds for services to start
-# Check if running:
-docker-compose ps
-
-# 5. Create test accounts
-chmod +x scripts/create-test-accounts.sh
-./scripts/create-test-accounts.sh
-
-# 6. Verify backend is running
-curl http://localhost:3000/api/v1/health
+npm run start:dev
 ```
 
-**Expected output:**
+✅ You should see: `🚀 Application is running on: http://localhost:3000`
+
+### 2. Start Ngrok Tunnel
+
+In a **separate terminal**, run:
+
+```bash
+ngrok http 3000
+```
+
+✅ You should see something like:
+```
+Forwarding   https://abc123.ngrok-free.dev -> http://localhost:3000
+```
+
+### 3. Update Frontend Configuration
+
+**IMPORTANT:** Copy your ngrok URL and update `/src/config/api.config.ts`:
+
+```typescript
+const NGROK_URL = 'https://YOUR-NGROK-URL.ngrok-free.dev'; // 👈 CHANGE THIS
+```
+
+**Example:**
+```typescript
+const NGROK_URL = 'https://chromoplasmic-ungaping-danielle.ngrok-free.dev';
+```
+
+### 4. Update Backend CORS (Already Done)
+
+The backend `/backend/src/main.ts` has been updated to allow all origins:
+
+```typescript
+app.enableCors({
+  origin: true, // Allows Figma Make proxy domains
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'ngrok-skip-browser-warning', 'User-Agent'],
+});
+```
+
+**⚠️ You MUST restart your backend after this change:**
+```bash
+# Stop the backend (Ctrl+C)
+# Then restart it
+npm run start:dev
+```
+
+### 5. Test the Connection
+
+1. Open the Figma Make app
+2. You'll see a "Backend Connection Diagnostics" panel if the backend is offline
+3. Click "Test Connection" to verify
+4. Click "Open Health Endpoint in New Tab" to test directly in browser
+
+## Troubleshooting
+
+### Error: "Failed to fetch" or "Network Error"
+
+**Cause:** Backend is not reachable
+
+**Solutions:**
+1. ✅ Verify backend is running: `http://localhost:3000/api/v1/health`
+2. ✅ Verify ngrok is running and shows the tunnel
+3. ✅ Test ngrok URL directly: `https://YOUR-URL.ngrok-free.dev/api/v1/health`
+4. ✅ Check if you restarted backend after CORS changes
+
+### Error: "CORS policy blocked"
+
+**Cause:** Backend CORS not configured correctly
+
+**Solutions:**
+1. ✅ Verify `/backend/src/main.ts` has `origin: true` in CORS config
+2. ✅ Restart backend server
+3. ✅ Check backend console for CORS errors
+
+### Ngrok URL Changes Every Time
+
+This is normal with free ngrok. When it changes:
+
+1. Copy new ngrok URL
+2. Update `/src/config/api.config.ts`
+3. **No need to reinstall or rebuild** - just refresh Figma Make
+
+**Pro Tip:** Get a free ngrok account to get a persistent domain:
+```bash
+ngrok config add-authtoken YOUR_TOKEN
+ngrok http 3000 --domain=your-domain.ngrok-free.app
+```
+
+## Testing Checklist
+
+- [ ] Backend running on `localhost:3000`
+- [ ] Ngrok tunnel active
+- [ ] Updated ngrok URL in `/src/config/api.config.ts`
+- [ ] Restarted backend after CORS changes
+- [ ] Can access `https://YOUR-URL.ngrok-free.dev/api/v1/health` in browser
+- [ ] Figma Make connection test passes
+
+## Quick Test Command
+
+Run this in your terminal to test the health endpoint:
+
+```bash
+curl -H "ngrok-skip-browser-warning: true" https://chromoplasmic-ungaping-danielle.ngrok-free.dev/api/v1/health
+```
+
+Expected response:
 ```json
 {
   "status": "ok",
@@ -46,265 +130,11 @@ curl http://localhost:3000/api/v1/health
 }
 ```
 
-### Option 2: Manual Start (Without Docker)
+## Support
 
-```bash
-# 1. Navigate to backend
-cd backend
+If you're still having issues:
 
-# 2. Install dependencies
-npm install
-
-# 3. Make sure PostgreSQL is running locally
-# Create database: cobt_db
-
-# 4. Copy and edit .env
-cp .env.example .env
-nano .env
-
-# Update these in .env:
-DB_HOST=localhost
-DB_PORT=5432
-DB_USERNAME=your_pg_user
-DB_PASSWORD=your_pg_password
-DB_DATABASE=cobt_db
-
-# 5. Start development server
-npm run start:dev
-```
-
----
-
-## ✅ Verify It's Working
-
-1. **Check Backend Health**
-   ```bash
-   curl http://localhost:3000/api/v1/health
-   ```
-
-2. **Check Frontend**
-   - Go to http://localhost:5173
-   - You should see a **green checkmark** with "Backend connected"
-
-3. **Try Demo Login**
-   - Click "Demo Login as Traveller"
-   - Should work without errors
-
----
-
-## 🔍 Common Issues
-
-### Issue 1: Port 3000 Already in Use
-
-```bash
-# Find what's using port 3000
-lsof -i :3000
-
-# Kill the process
-kill -9 PID
-
-# Or change port in backend/.env
-PORT=3001
-```
-
-### Issue 2: Docker Not Installed
-
-**Install Docker:**
-- **Mac**: https://docs.docker.com/desktop/mac/install/
-- **Windows**: https://docs.docker.com/desktop/windows/install/
-- **Linux**: https://docs.docker.com/engine/install/
-
-### Issue 3: Permission Denied (Linux)
-
-```bash
-# Add user to docker group
-sudo usermod -aG docker $USER
-
-# Logout and login again, or run:
-newgrp docker
-```
-
-### Issue 4: PostgreSQL Connection Failed
-
-```bash
-# Check if PostgreSQL container is running
-docker-compose ps postgres
-
-# Restart PostgreSQL
-docker-compose restart postgres
-
-# Check logs
-docker-compose logs postgres
-```
-
----
-
-## 🎯 Step-by-Step First Time Setup
-
-### Terminal 1: Backend
-
-```bash
-# Clone repository (if not done)
-git clone <repository-url>
-cd cobt/backend
-
-# Copy environment file
-cp .env.example .env
-
-# Start with Docker
-docker-compose up -d
-
-# Wait 30 seconds...
-
-# Create test accounts
-chmod +x scripts/create-test-accounts.sh
-./scripts/create-test-accounts.sh
-
-# Keep this terminal open to view logs:
-docker-compose logs -f api
-```
-
-### Terminal 2: Frontend
-
-```bash
-# Navigate to project root
-cd cobt
-
-# Install dependencies (if not done)
-npm install
-
-# Start frontend
-npm run dev
-```
-
-### Browser
-
-1. Open http://localhost:5173
-2. Wait for "Backend connected" green indicator
-3. Click "Demo Login as Traveller"
-4. You should see the Traveller Dashboard!
-
----
-
-## 📊 Backend Status Check
-
-Run this script to check all services:
-
-```bash
-cd backend
-
-echo "=== Docker Status ==="
-docker-compose ps
-
-echo -e "\n=== API Health ==="
-curl http://localhost:3000/api/v1/health
-
-echo -e "\n=== API Docs ==="
-echo "Open: http://localhost:3000/api/docs"
-
-echo -e "\n=== Frontend URL ==="
-echo "Open: http://localhost:5173"
-```
-
----
-
-## 🆘 Still Not Working?
-
-### Check These Files:
-
-1. **Frontend `.env`** (in project root)
-   ```bash
-   VITE_API_URL=http://localhost:3000/api/v1
-   VITE_WS_URL=http://localhost:3000
-   ```
-
-2. **Backend `.env`** (in backend folder)
-   ```bash
-   NODE_ENV=development
-   PORT=3000
-   CORS_ORIGIN=http://localhost:5173
-   ```
-
-### View Logs:
-
-```bash
-# Backend logs
-cd backend
-docker-compose logs -f
-
-# Or specific service
-docker-compose logs -f api
-docker-compose logs -f postgres
-docker-compose logs -f kafka
-```
-
-### Nuclear Option (Start Fresh):
-
-```bash
-cd backend
-
-# Stop and remove everything
-docker-compose down -v
-
-# Remove all images
-docker system prune -a
-
-# Start fresh
-docker-compose up -d
-
-# Wait 30 seconds
-sleep 30
-
-# Create test accounts
-./scripts/create-test-accounts.sh
-```
-
----
-
-## 📞 Quick Commands
-
-```bash
-# Start backend
-cd backend && docker-compose up -d
-
-# Stop backend
-cd backend && docker-compose down
-
-# Restart backend
-cd backend && docker-compose restart api
-
-# View logs
-cd backend && docker-compose logs -f api
-
-# Check health
-curl http://localhost:3000/api/v1/health
-
-# Create test accounts
-cd backend && ./scripts/create-test-accounts.sh
-```
-
----
-
-## ✅ Success Indicators
-
-You'll know it's working when:
-
-1. ✅ `curl http://localhost:3000/api/v1/health` returns JSON
-2. ✅ Login page shows "Backend connected" (green)
-3. ✅ Demo login works without errors
-4. ✅ No "Network Error" in browser console
-
----
-
-## 🎉 Once Backend is Running
-
-1. Refresh the login page (http://localhost:5173)
-2. You should see: ✅ "Backend connected"
-3. Click "Demo Login as Traveller"
-4. Credentials will auto-fill and login!
-
----
-
-**Need more help?** Check the comprehensive guides:
-- [GETTING_STARTED.md](./GETTING_STARTED.md)
-- [backend/QUICKSTART.md](./backend/QUICKSTART.md)
+1. Check browser console (F12) for detailed error messages
+2. Check backend console for incoming requests
+3. Verify ngrok shows incoming requests in its dashboard
+4. Make sure no firewall is blocking the connection

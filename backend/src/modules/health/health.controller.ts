@@ -23,8 +23,9 @@ export class HealthController {
   @ApiOperation({ summary: 'Health check endpoint' })
   @ApiResponse({ status: 200, description: 'Service is healthy' })
   @ApiResponse({ status: 503, description: 'Service is unhealthy' })
-  check() {
-    return this.health.check([
+  async check() {
+    console.log('✅ Health check endpoint called - CORS is working!');
+    const result = await this.health.check([
       // Database health
       () => this.db.pingCheck('database'),
       
@@ -41,6 +42,8 @@ export class HealthController {
           thresholdPercent: 0.9,
         }),
     ]);
+    console.log('📊 Health check result:', result.status);
+    return result;
   }
 
   @Get('ready')

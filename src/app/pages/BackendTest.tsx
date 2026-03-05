@@ -6,6 +6,7 @@ import { CheckCircle2, XCircle, Clock, RefreshCw, Server, Database, Zap, Activit
 import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
 import api from '../../lib/api';
 import { Separator } from '../components/ui/separator';
+import { API_CONFIG } from '../../config/api.config';
 
 interface HealthCheck {
   name: string;
@@ -50,9 +51,10 @@ export function BackendTest() {
     try {
       // Test 1: Basic Server Reachability
       try {
-        const response = await fetch('http://localhost:3000/api/v1/health/live', {
+        const response = await fetch(`${API_CONFIG.API_BASE_URL}/health/live`, {
           method: 'GET',
           signal: AbortSignal.timeout(5000),
+          headers: API_CONFIG.NGROK_HEADERS,
         });
         
         if (response.ok) {
@@ -285,26 +287,26 @@ export function BackendTest() {
               <Database className="w-4 h-4 text-gray-500" />
               <span className="text-sm text-gray-600">Backend URL:</span>
               <code className="text-sm bg-gray-100 px-2 py-1 rounded">
-                http://localhost:3000/api/v1
+                {API_CONFIG.API_BASE_URL}
               </code>
             </div>
             <div className="flex items-center gap-2">
               <Zap className="w-4 h-4 text-gray-500" />
               <span className="text-sm text-gray-600">Health Endpoint:</span>
               <code className="text-sm bg-gray-100 px-2 py-1 rounded">
-                http://localhost:3000/api/v1/health
+                {API_CONFIG.API_BASE_URL}/health
               </code>
             </div>
             <div className="flex items-center gap-2">
               <Activity className="w-4 h-4 text-gray-500" />
               <span className="text-sm text-gray-600">API Documentation:</span>
               <a 
-                href="http://localhost:3000/api/docs" 
+                href={`${API_CONFIG.WS_URL}/api/docs`}
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-sm text-orange-500 hover:text-orange-600 underline"
               >
-                http://localhost:3000/api/docs
+                {API_CONFIG.WS_URL}/api/docs
               </a>
             </div>
           </CardContent>
@@ -320,7 +322,7 @@ export function BackendTest() {
               <Button
                 variant="outline"
                 className="justify-start"
-                onClick={() => window.open('http://localhost:3000/api/docs', '_blank')}
+                onClick={() => window.open(`${API_CONFIG.WS_URL}/api/docs`, '_blank')}
               >
                 📚 API Documentation
               </Button>
@@ -391,7 +393,7 @@ export function BackendTest() {
             <div>
               <p className="text-sm font-semibold text-gray-700 mb-1">Check Health (curl):</p>
               <code className="block text-sm bg-gray-900 text-gray-100 p-3 rounded">
-                curl http://localhost:3000/api/v1/health
+                curl {API_CONFIG.API_BASE_URL}/health
               </code>
             </div>
           </CardContent>
