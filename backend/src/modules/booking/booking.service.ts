@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
-import { Booking, BookingStatus } from './entities/booking.entity';
+import { Booking, BookingStatus, BookingType } from './entities/booking.entity';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { ApproveBookingDto } from './dto/approve-booking.dto';
@@ -39,9 +39,14 @@ export class BookingService {
       const tax = subtotal * 0.075; // 7.5% VAT
       const total = subtotal + tax;
 
-      // Create booking
+      // Convert type string to enum
+      const bookingType = createBookingDto.type as BookingType;
+
+      // Create booking (excluding type from spread, add it separately as enum)
+      const { type, ...bookingData } = createBookingDto;
       const booking = this.bookingRepository.create({
-        ...createBookingDto,
+        ...bookingData,
+        type: bookingType,
         userId,
         bookingReference,
         flightPrice,
@@ -53,7 +58,7 @@ export class BookingService {
         status: BookingStatus.PENDING_APPROVAL,
       });
 
-      const savedBooking = await this.bookingRepository.save(booking);
+      const savedBooking = await this.bookingRepository.save(booking) as Booking;
 
       // Emit Kafka event
       await this.kafkaProducer.sendMessage('booking-events', {
