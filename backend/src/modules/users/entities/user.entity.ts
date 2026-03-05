@@ -11,6 +11,7 @@ import { Exclude } from 'class-transformer';
 import { Booking } from '@/modules/booking/entities/booking.entity';
 import { Payment } from '@/modules/payment/entities/payment.entity';
 
+
 export enum UserRole {
   TRAVELLER = 'traveller',
   TRAVEL_ARRANGER = 'travel_arranger',

@@ -1,0 +1,301 @@
+```
+================================================================================
+                    WHAT HAPPENED & HOW IT'S FIXED
+================================================================================
+
+BEFORE YOUR MANUAL EDITS:
+╔══════════════════════════════════════════════════════════════════════════╗
+║  Frontend                                                                ║
+║  ┌────────────────────────────────────────────────────────────┐         ║
+║  │ api.ts: const API_BASE_URL =                               │         ║
+║  │         import.meta.env.VITE_API_URL ||                    │         ║
+║  │         'http://localhost:3000/api/v1'                     │         ║
+║  └────────────────────────────────────────────────────────────┘         ║
+║                              │                                           ║
+║                              ▼                                           ║
+║  ┌────────────────────────────────────────────────────────────┐         ║
+║  │ .env: VITE_API_URL=http://localhost:3000/api/v1           │         ║
+║  └────────────────────────────────────────────────────────────┘         ║
+╚══════════════════════════════════════════════════════════════════════════╝
+                              │
+                              │ HTTP Request
+                              ▼
+╔══════════════════════════════════════════════════════════════════════════╗
+║  Backend (localhost:3000)                                                ║
+║  ┌────────────────────────────────────────────────────────────┐         ║
+║  │ ✅ NestJS API Server                                        │         ║
+║  │ ✅ PostgreSQL Database                                      │         ║
+║  │ ✅ Kafka Message Broker                                     │         ║
+║  └────────────────────────────────────────────────────────────┘         ║
+╚══════════════════════════════════════════════════════════════════════════╝
+
+STATUS: ✅ WORKING
+
+
+================================================================================
+
+
+YOUR MANUAL EDITS:
+╔══════════════════════════════════════════════════════════════════════════╗
+║  Frontend                                                                ║
+║  ┌────────────────────────────────────────────────────────────┐         ║
+║  │ api.ts: const API_BASE_URL =                               │         ║
+║  │   "https://chromoplasmic-ungaping-danielle.ngrok-free.dev" │ ← Hardcoded!
+║  └────────────────────────────────────────────────────────────┘         ║
+╚══════════════════════════════════════════════════════════════════════════╝
+                              │
+                              │ HTTP Request
+                              ▼
+╔══════════════════════════════════════════════════════════════════════════╗
+║  ngrok URL                                                               ║
+║  ┌────────────────────────────────────────────────────────────┐         ║
+║  │ ❌ chromoplasmic-ungaping-danielle.ngrok-free.dev          │         ║
+║  │    NOT RESPONDING                                           │         ║
+║  └────────────────────────────────────────────────────────────┘         ║
+╚══════════════════════════════════════════════════════════════════════════╝
+                              │
+                              │ No tunnel!
+                              ▼
+╔══════════════════════════════════════════════════════════════════════════╗
+║  Backend (localhost:3000)                                                ║
+║  ┌────────────────────────────────────────────────────────────┐         ║
+║  │ ❓ Maybe running, but not reachable via ngrok               │         ║
+║  └────────────────────────────────────────────────────────────┘         ║
+╚══════════════════════════════════════════════════════════════════════════╝
+
+STATUS: ❌ NETWORK ERROR
+REASON: ngrok tunnel not running or URL expired
+
+
+================================================================================
+
+
+MY FIX:
+╔══════════════════════════════════════════════════════════════════════════╗
+║  Frontend                                                                ║
+║  ┌────────────────────────────────────────────────────────────┐         ║
+║  │ api.ts: const API_BASE_URL =                               │         ║
+║  │         import.meta.env.VITE_API_URL ||                    │ ← Flexible!
+║  │         'http://localhost:3000/api/v1'                     │         ║
+║  └────────────────────────────────────────────────────────────┘         ║
+║                              │                                           ║
+║                              ▼                                           ║
+║  ┌────────────────────────────────────────────────────────────┐         ║
+║  │ .env: VITE_API_URL=http://localhost:3000/api/v1           │ ← Easy!  ║
+║  │       (Can change to ngrok URL when needed)                │         ║
+║  └────────────────────────────────────────────────────────────┘         ║
+╚══════════════════════════════════════════════════════════════════════════╝
+                              │
+                              │ HTTP Request
+                              ▼
+╔══════════════════════════════════════════════════════════════════════════╗
+║  Backend (localhost:3000)                                                ║
+║  ┌────────────────────────────────────────────────────────────┐         ║
+║  │ ✅ Start with: cd backend && docker-compose up -d           │         ║
+║  │ ✅ NestJS API Server                                        │         ║
+║  │ ✅ PostgreSQL Database                                      │         ║
+║  │ ✅ Kafka Message Broker                                     │         ║
+║  └────────────────────────────────────────────────────────────┘         ║
+╚══════════════════════════════════════════════════════════════════════════╝
+
+STATUS: ✅ READY TO WORK
+ACTION: Just start backend with docker-compose!
+
+
+================================================================================
+
+
+OPTIONAL: IF YOU NEED NGROK (Remote Access)
+╔══════════════════════════════════════════════════════════════════════════╗
+║  Frontend                                                                ║
+║  ┌────────────────────────────────────────────────────────────┐         ║
+║  │ .env: VITE_API_URL=https://abc123.ngrok-free.app/api/v1   │ ← Update ║
+║  │       VITE_WS_URL=https://abc123.ngrok-free.app           │         ║
+║  └────────────────────────────────────────────────────────────┘         ║
+╚══════════════════════════════════════════════════════════════════════════╝
+                              │
+                              │ HTTPS Request
+                              ▼
+╔══════════════════════════════════════════════════════════════════════════╗
+║  ngrok Tunnel                                                            ║
+║  ┌────────────────────────────────────────────────────────────┐         ║
+║  │ ✅ abc123.ngrok-free.app                                    │         ║
+║  │    Started with: ngrok http 3000                            │         ║
+║  └────────────────────────────────────────────────────────────┘         ║
+╚══════════════════════════════════════════════════════════════════════════╝
+                              │
+                              │ Forward to localhost:3000
+                              ▼
+╔══════════════════════════════════════════════════════════════════════════╗
+║  Backend (localhost:3000)                                                ║
+║  ┌────────────────────────────────────────────────────────────┐         ║
+║  │ ✅ NestJS API (CORS updated for ngrok URL)                  │         ║
+║  │ ✅ PostgreSQL Database                                      │         ║
+║  │ ✅ Kafka Message Broker                                     │         ║
+║  └────────────────────────────────────────────────────────────┘         ║
+╚══════════════════════════════════════════════════════════════════════════╝
+
+STATUS: ✅ ACCESSIBLE REMOTELY
+SETUP: See NGROK_GUIDE.md for full instructions
+
+
+================================================================================
+                              DECISION TREE
+================================================================================
+
+                         START HERE
+                             │
+                             ▼
+                  ┌──────────────────────┐
+                  │ Do you need remote   │
+                  │ access right now?    │
+                  └──────────────────────┘
+                      │              │
+                     NO             YES
+                      │              │
+                      ▼              ▼
+              ┌──────────────┐  ┌──────────────┐
+              │ USE LOCAL-   │  │ USE ngrok    │
+              │ HOST         │  │              │
+              └──────────────┘  └──────────────┘
+                      │              │
+                      ▼              ▼
+            ┌─────────────────┐  ┌─────────────────┐
+            │ 1. Start backend│  │ 1. Start backend│
+            │    docker-      │  │    docker-      │
+            │    compose up   │  │    compose up   │
+            │                 │  │                 │
+            │ 2. Start        │  │ 2. Start ngrok  │
+            │    frontend     │  │    ngrok http   │
+            │    npm run dev  │  │    3000         │
+            │                 │  │                 │
+            │ 3. Open         │  │ 3. Update .env  │
+            │    localhost:   │  │    with ngrok   │
+            │    5173         │  │    URL          │
+            │                 │  │                 │
+            │                 │  │ 4. Update CORS  │
+            │                 │  │    in backend   │
+            │                 │  │                 │
+            │                 │  │ 5. Restart both │
+            │                 │  │    backend &    │
+            │                 │  │    frontend     │
+            └─────────────────┘  └─────────────────┘
+                      │              │
+                      ▼              ▼
+                  ┌──────────────────────┐
+                  │   ✅ WORKING!        │
+                  └──────────────────────┘
+
+
+================================================================================
+                          QUICK COMMANDS
+================================================================================
+
+FOR LOCAL DEVELOPMENT (DEFAULT):
+────────────────────────────────────────────────────────────────────────────
+
+Terminal 1:
+  cd backend
+  docker-compose up -d
+
+Wait 30 seconds, then Terminal 2:
+  npm run dev
+
+Open: http://localhost:5173
+
+
+FOR REMOTE ACCESS WITH ngrok:
+────────────────────────────────────────────────────────────────────────────
+
+Terminal 1:
+  cd backend
+  docker-compose up -d
+
+Terminal 2:
+  ngrok http 3000
+  (Copy the https:// URL)
+
+Terminal 3:
+  # Edit .env with ngrok URL
+  # Edit backend/src/main.ts CORS
+  docker-compose restart
+  npm run dev
+
+
+VERIFICATION:
+────────────────────────────────────────────────────────────────────────────
+
+Check backend:
+  curl http://localhost:3000/api/v1/health
+
+Check containers:
+  cd backend && docker-compose ps
+
+Check system:
+  http://localhost:5173/system-status
+
+
+================================================================================
+                         KEY TAKEAWAYS
+================================================================================
+
+✅ Environment variables (.env) are BETTER than hardcoded URLs
+✅ localhost is FASTER and MORE STABLE for development
+✅ ngrok is USEFUL for remote access and webhook testing
+✅ Always start backend BEFORE checking connection
+✅ Docker containers need 30-60 seconds to initialize
+✅ ngrok free URLs CHANGE every restart (need to update .env)
+✅ System Status page (http://localhost:5173/system-status) is your friend
+
+
+================================================================================
+                      FILES YOU SHOULD KNOW
+================================================================================
+
+Configuration:
+  /.env                      ← Edit this to change API URL
+  /backend/.env              ← Backend configuration
+
+Code:
+  /src/lib/api.ts            ← API client (reads .env)
+  /src/lib/websocket.ts      ← WebSocket client (reads .env)
+  /backend/src/main.ts       ← CORS settings (line ~20)
+
+Documentation:
+  /FIX_NOW.txt               ← Quick terminal commands
+  /MANUAL_EDIT_FIX.md        ← Detailed explanation
+  /NGROK_GUIDE.md            ← Complete ngrok setup
+  /START_APPLICATION.md      ← General startup guide
+
+
+================================================================================
+                            SUMMARY
+================================================================================
+
+WHAT WAS WRONG:
+  ✗ Hardcoded ngrok URL in source files
+  ✗ ngrok tunnel not running
+  ✗ Can't connect to backend
+
+WHAT I FIXED:
+  ✓ Reverted to use environment variables
+  ✓ Set .env to localhost (default)
+  ✓ Created comprehensive ngrok guide
+  ✓ Made configuration flexible and easy
+
+WHAT YOU NEED TO DO:
+  ✓ Start backend: cd backend && docker-compose up -d
+  ✓ Start frontend: npm run dev
+  ✓ Open browser: http://localhost:5173
+
+RESULT:
+  ✓ Works immediately with localhost
+  ✓ Easy to switch to ngrok when needed
+  ✓ No more hardcoded URLs
+  ✓ Best practices configuration
+
+TIME TO FIX: 2 minutes
+COMPLEXITY: Easy (just start backend!)
+
+================================================================================
+```

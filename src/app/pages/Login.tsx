@@ -9,6 +9,12 @@ import { authService } from '../../services/auth.service';
 import { toast } from 'sonner';
 import api from '../../lib/api';
 import { BackendOfflineAlert } from '../components/BackendOfflineAlert';
+import { API_CONFIG } from '../../config/api.config';
+import { ConnectionDiagnostics } from '../components/ConnectionDiagnostics';
+import { BackendSetupGuide } from '../components/BackendSetupGuide';
+import { QuickConnectionTest } from '../components/QuickConnectionTest';
+import { CorsDebugPanel } from '../components/CorsDebugPanel';
+import { RestartBanner } from '../components/RestartBanner';
 
 export function Login() {
   const navigate = useNavigate();
@@ -48,7 +54,7 @@ export function Login() {
 
     try {
       console.log('🔐 Attempting login with:', { email, password: '***' });
-      console.log('🌐 API Base URL:', import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1');
+      console.log('🌐 API Base URL:', API_CONFIG.API_BASE_URL);
       
       const { user } = await authService.login({ email, password });
       
@@ -127,6 +133,15 @@ export function Login() {
           </div>
           <h1 className="text-4xl font-bold text-white mb-2 drop-shadow-lg">BTMTravel COBT</h1>
           <p className="text-white/90 text-lg drop-shadow">Corporate Booking Tool</p>
+        </div>
+
+        {/* Restart Reminder Banner */}
+        <RestartBanner />
+
+        {/* Quick Connection Test */}
+        <div className="mb-4 space-y-3">
+          <QuickConnectionTest />
+          <CorsDebugPanel />
         </div>
 
         {/* Login Card */}
@@ -256,6 +271,14 @@ export function Login() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Show setup guide and diagnostics if backend is offline */}
+        {backendStatus === 'offline' && (
+          <div className="mt-6 space-y-4">
+            <BackendSetupGuide />
+            <ConnectionDiagnostics />
+          </div>
+        )}
       </div>
     </div>
   );

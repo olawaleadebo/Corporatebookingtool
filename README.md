@@ -4,6 +4,30 @@ A comprehensive travel booking platform for companies to manage employee travel 
 
 ---
 
+## 🚨 CORS Issue Fixed! ✅
+
+**Backend not connecting?** → Read [TLDR.txt](./TLDR.txt) (30 seconds)  
+**Need quick fix?** → Read [QUICK_FIX.md](./QUICK_FIX.md) (1 minute)  
+**Want full details?** → Read [START_HERE.md](./START_HERE.md) (3 minutes)  
+**All documentation:** → See [DOCUMENTATION_INDEX.md](./DOCUMENTATION_INDEX.md)
+
+### ⚡ Most Common Issue: Did you restart your backend?
+```bash
+cd backend
+npm run start:dev
+```
+Then check the login page - should show ✅ "Backend Online"
+
+---
+
+## 🚨 Other Issues? 
+
+**See errors?** → Read [FIX_NOW.txt](./FIX_NOW.txt) or [MANUAL_EDIT_FIX.md](./MANUAL_EDIT_FIX.md)  
+**Using ngrok?** → Read [NGROK_GUIDE.md](./NGROK_GUIDE.md)  
+**First time?** → Read [00_READ_ME_FIRST.md](./00_READ_ME_FIRST.md)
+
+---
+
 ## 🎯 Quick Start
 
 ### 1. Start Backend

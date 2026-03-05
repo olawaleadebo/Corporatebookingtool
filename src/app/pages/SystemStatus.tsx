@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Button } from '../components/ui/button';
 import { CheckCircle2, XCircle, Loader2, RefreshCw, Server, Database, Zap, Terminal } from 'lucide-react';
 import { api } from '../../lib/api';
+import { API_CONFIG } from '../../config/api.config';
 
 interface HealthCheck {
   status: string;
@@ -172,13 +173,13 @@ export default function SystemStatus() {
               <div className="flex justify-between items-center py-2 border-b">
                 <span className="text-sm text-gray-600">API Endpoint:</span>
                 <code className="text-sm bg-gray-100 px-2 py-1 rounded">
-                  {import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1'}
+                  {API_CONFIG.API_BASE_URL}
                 </code>
               </div>
               <div className="flex justify-between items-center py-2 border-b">
                 <span className="text-sm text-gray-600">WebSocket URL:</span>
                 <code className="text-sm bg-gray-100 px-2 py-1 rounded">
-                  {import.meta.env.VITE_WS_URL || 'http://localhost:3000'}
+                  {API_CONFIG.WS_URL}
                 </code>
               </div>
               <div className="flex justify-between items-center py-2">
