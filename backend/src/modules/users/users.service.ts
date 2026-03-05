@@ -37,7 +37,7 @@ export class UsersService {
     await this.userRepository.update(id, { lastLoginAt: new Date() });
   }
 
-  async updateRefreshToken(id: string, refreshToken: string | null): Promise<void> {
+  async updateRefreshToken(id: string, refreshToken: string | any): Promise<void> {
     await this.userRepository.update(id, { refreshToken });
   }
 

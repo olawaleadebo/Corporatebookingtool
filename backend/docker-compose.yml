@@ -7,7 +7,7 @@ services:
     container_name: cobt-postgres
     environment:
       POSTGRES_USER: cobt_user
-      POSTGRES_PASSWORD: your_secure_password_here
+      POSTGRES_PASSWORD: 1234
       POSTGRES_DB: cobt_db
     ports:
       - "5432:5432"
@@ -99,7 +99,7 @@ services:
       DB_HOST: postgres
       DB_PORT: 5432
       DB_USERNAME: cobt_user
-      DB_PASSWORD: your_secure_password_here
+      DB_PASSWORD: 1234
       DB_DATABASE: cobt_db
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION: 7d

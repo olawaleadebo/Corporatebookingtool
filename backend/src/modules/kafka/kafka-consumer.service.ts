@@ -10,25 +10,49 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
   private consumer: Consumer;
   private readonly processedMessages = new Set<string>();
 
-  constructor(
-    private configService: ConfigService,
-    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
-  ) {
-    this.kafka = new Kafka({
-      clientId: this.configService.get('KAFKA_CLIENT_ID'),
-      brokers: [this.configService.get('KAFKA_BROKER')],
-      retry: {
-        initialRetryTime: 100,
-        retries: 8,
-      },
-    });
+  // constructor(
+  //   private configService: ConfigService,
+  //   @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
+  // ) {
+  //   this.kafka = new Kafka({
+  //     clientId: this.configService.get('KAFKA_CLIENT_ID'),
+  //     brokers: [this.configService.get('KAFKA_BROKER')],
+  //     retry: {
+  //       initialRetryTime: 100,
+  //       retries: 8,
+  //     },
+  //   });
 
-    this.consumer = this.kafka.consumer({
-      groupId: this.configService.get('KAFKA_GROUP_ID'),
-      sessionTimeout: 30000,
-      heartbeatInterval: 3000,
-    });
-  }
+  //   this.consumer = this.kafka.consumer({
+  //     groupId: this.configService.get('KAFKA_GROUP_ID'),
+  //     sessionTimeout: 30000,
+  //     heartbeatInterval: 3000,
+  //   });
+  // }'
+
+  constructor(
+  private configService: ConfigService,
+  @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
+) {
+  const clientId = this.configService.getOrThrow<string>('KAFKA_CLIENT_ID');
+  const broker = this.configService.getOrThrow<string>('KAFKA_BROKER');
+  const groupId = this.configService.getOrThrow<string>('KAFKA_GROUP_ID');
+
+  this.kafka = new Kafka({
+    clientId,
+    brokers: [broker],
+    retry: {
+      initialRetryTime: 100,
+      retries: 8,
+    },
+  });
+
+  this.consumer = this.kafka.consumer({
+    groupId,
+    sessionTimeout: 30000,
+    heartbeatInterval: 3000,
+  });
+}
 
   async onModuleInit() {
     try {

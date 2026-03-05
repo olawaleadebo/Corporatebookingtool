@@ -12,9 +12,15 @@ export class PaystackService {
   constructor(
     private configService: ConfigService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
-  ) {
-    this.secretKey = this.configService.get('PAYSTACK_SECRET_KEY');
-  }
+  ) 
+  // {
+    
+  //   this.secretKey = this.configService.get('PAYSTACK_SECRET_KEY');
+  // }
+   {
+  this.secretKey =
+    this.configService.getOrThrow<string>('PAYSTACK_SECRET_KEY');
+}
 
   async initializeTransaction(params: {
     email: string;
