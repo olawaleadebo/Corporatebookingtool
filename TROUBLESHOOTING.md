@@ -1,404 +1,303 @@
-# 🔧 Troubleshooting Network Errors
+# 🔧 BTMTravel COBT - Login Troubleshooting Guide
 
-## Error Fixed! ✅
+## Issue: "Username is not working" / Login fails
 
-The application now has:
-
-1. **Backend Connection Checking** - Automatically checks if backend is reachable
-2. **Status Indicator** - Shows green/red status on login page
-3. **Helpful Error Messages** - Clear instructions when backend is offline
-4. **Retry Button** - Easy way to check connection again
+Follow these steps in order to diagnose and fix the issue.
 
 ---
 
-## What You Need to Do Now
+## 🔍 Step 1: Check Current Database Status
 
-### Step 1: Start the Backend
-
-Open a **new terminal** window and run:
+Run this command to see what's in your database:
 
 ```bash
-cd backend
-docker-compose up -d
+docker exec -it cobt-postgres psql -U postgres -f /tmp/check-database.sql
 ```
 
-Wait about 30 seconds for all services to start.
+Or manually:
+```bash
+docker exec -it cobt-postgres psql -U postgres -d cobt_user -c "SELECT email, role, status FROM users;"
+```
 
-### Step 2: Create Test Accounts
+### Expected Output:
+```
+         email          |      role       | status
+------------------------+-----------------+--------
+ traveller@test.com     | traveller       | active
+ arranger@test.com      | travel_arranger | active
+ admin@test.com         | admin           | active
+```
+
+### If you see no users:
+➡️ Go to **Step 2** - Insert Demo Users
+
+### If you see users but login fails:
+➡️ Go to **Step 3** - Fix Password Hash
+
+---
+
+## 🔨 Step 2: Insert Demo Users (Fresh Installation)
+
+### Option A: Using the Node.js Script (RECOMMENDED)
+
+This generates a working SQL file with the correct bcrypt hash:
 
 ```bash
-chmod +x scripts/create-test-accounts.sh
-./scripts/create-test-accounts.sh
+# 1. Install bcrypt in your backend directory
+cd /path/to/cobt-backend
+npm install bcrypt
+
+# 2. Run the script (from your frontend/project root)
+node create-demo-users.js
 ```
 
-### Step 3: Verify Backend is Running
+This will:
+- ✅ Generate a valid bcrypt hash
+- ✅ Create `working-demo-users.sql`
+- ✅ Show you the exact commands to run
+
+Then follow the commands it shows:
+```bash
+docker cp working-demo-users.sql cobt-postgres:/tmp/working-demo-users.sql
+docker exec -it cobt-postgres psql -U postgres -f /tmp/working-demo-users.sql
+```
+
+### Option B: Quick Manual Insert
+
+If you can't run Node.js scripts, use this command:
 
 ```bash
-curl http://localhost:3000/api/v1/health
+docker exec -it cobt-postgres psql -U postgres -d cobt_user
 ```
 
-You should see:
+Then paste this SQL:
+```sql
+-- First check if table exists
+\dt users
+
+-- If table doesn't exist, you need to run migrations first!
+-- If table exists, insert users:
+
+DELETE FROM users WHERE email IN ('traveller@test.com', 'arranger@test.com', 'admin@test.com');
+
+-- You MUST replace the hash below with a real bcrypt hash
+-- Get one by running: node create-demo-users.js
+INSERT INTO users (id, email, password, "firstName", "lastName", "phoneNumber", role, status, department, "costCenter", "createdAt", "updatedAt") 
+VALUES 
+(gen_random_uuid(), 'traveller@test.com', 'PASTE_BCRYPT_HASH_HERE', 'John', 'Traveller', '+234 801 234 5678', 'traveller', 'active', 'Sales', 'CC-001', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(gen_random_uuid(), 'arranger@test.com', 'PASTE_BCRYPT_HASH_HERE', 'Sarah', 'Arranger', '+234 802 345 6789', 'travel_arranger', 'active', 'Operations', 'CC-002', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(gen_random_uuid(), 'admin@test.com', 'PASTE_BCRYPT_HASH_HERE', 'Michael', 'Admin', '+234 803 456 7890', 'admin', 'active', 'IT', 'CC-003', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+SELECT email, role FROM users WHERE email LIKE '%@test.com';
+\q
+```
+
+---
+
+## 🔐 Step 3: Fix Password Hash Issue
+
+If users exist but login fails, the password hash is likely wrong.
+
+### Symptoms:
+- ✅ Backend shows "Online"
+- ✅ Users exist in database
+- ❌ Login returns 401 Unauthorized
+
+### Solution:
+
+Run the hash generator and update users:
+
+```bash
+# Generate correct hash
+node create-demo-users.js
+
+# Or manually in backend:
+cd /path/to/cobt-backend
+node -e "const bcrypt = require('bcrypt'); bcrypt.hash('Test123!', 10).then(h => console.log(h));"
+```
+
+Copy the generated hash (starts with `$2b$10$...`) and update users:
+
+```bash
+docker exec -it cobt-postgres psql -U postgres -d cobt_user
+```
+
+```sql
+-- Update all demo users with the new hash
+UPDATE users 
+SET password = 'PASTE_YOUR_GENERATED_HASH_HERE'
+WHERE email IN ('traveller@test.com', 'arranger@test.com', 'admin@test.com');
+
+-- Verify
+SELECT email, LEFT(password, 20) || '...' FROM users WHERE email LIKE '%@test.com';
+\q
+```
+
+---
+
+## 🧪 Step 4: Test Login via API
+
+Test the backend directly to isolate frontend issues:
+
+```bash
+curl -X POST https://your-ngrok-url/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -H "ngrok-skip-browser-warning: true" \
+  -d '{
+    "email": "traveller@test.com",
+    "password": "Test123!"
+  }'
+```
+
+### Expected Response:
 ```json
 {
-  "status": "ok",
-  "info": {
-    "database": { "status": "up" }
+  "accessToken": "eyJhbGc...",
+  "user": {
+    "id": "...",
+    "email": "traveller@test.com",
+    "firstName": "John",
+    "role": "traveller"
   }
 }
 ```
 
-### Step 4: Refresh Frontend
+### If you get 401 Unauthorized:
+- Password hash is wrong → Go back to Step 3
+- User doesn't exist → Go back to Step 2
 
-1. Go back to http://localhost:5173
-2. The login page will automatically detect backend
-3. You should see: ✅ "Backend connected" (green checkmark)
-4. Click "Demo Login as Traveller"
-
----
-
-## What Changed?
-
-### 1. Enhanced Error Handling (`/src/lib/api.ts`)
-- Better network error detection
-- Helpful error messages showing API URL
-- Prevents toast spam on health checks
-
-### 2. Connection Status Check (`/src/app/pages/Login.tsx`)
-- Checks backend on page load
-- Shows status indicator (checking/online/offline)
-- Prevents login attempts when backend is offline
-- Retry button to check again
-
-### 3. Visual Indicators
-- 🟡 Yellow pulse: Checking connection
-- 🟢 Green check: Backend connected
-- 🔴 Red alert: Backend offline with instructions
-
-### 4. Helpful Alert Component
-- Shows when backend is offline
-- Quick start commands
-- Retry button
-- Link to setup guide
+### If you get 500 Internal Server Error:
+- Check backend logs: `docker logs cobt-api`
+- Database might be down: `docker ps | grep postgres`
 
 ---
 
-## Current Architecture
+## 🔍 Step 5: Check Backend Logs
 
+See what the backend is saying:
+
+```bash
+# Follow backend logs in real-time
+docker logs -f cobt-api
+
+# Last 50 lines
+docker logs --tail 50 cobt-api
+
+# Check PostgreSQL logs
+docker logs --tail 50 cobt-postgres
 ```
-┌─────────────────┐
-│   Frontend      │
-│  localhost:5173 │
-│                 │
-│  ✓ Status Check │
-│  ✓ Error Display│
-│  ✓ Auto-Retry   │
-└────────┬────────┘
-         │
-         │ HTTP/WebSocket
-         │
-         ▼
-┌─────────────────┐
-│   Backend API   │
-│  localhost:3000 │
-│                 │
-│  ✓ NestJS       │
-│  ✓ PostgreSQL   │
-│  ✓ Kafka        │
-│  ✓ Redis        │
-└─────────────────┘
-```
+
+### Look for these errors:
+
+**"relation 'users' does not exist"**
+➡️ Table not created. Run migrations or enable `synchronize: true` in TypeORM config
+
+**"password hash is invalid"**
+➡️ bcrypt hash is malformed. Generate new hash with `create-demo-users.js`
+
+**"invalid input syntax for type uuid"**
+➡️ UUID extension not installed. Run: `CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`
 
 ---
 
-## Quick Diagnostics
+## 🚑 Emergency Reset
 
-### Check if Backend is Running
-
-```bash
-# Method 1: Docker
-cd backend
-docker-compose ps
-
-# Method 2: Health endpoint
-curl http://localhost:3000/api/v1/health
-
-# Method 3: Check port
-lsof -i :3000
-```
-
-### Check Frontend Environment
+If nothing works, nuclear option:
 
 ```bash
-# View environment variables
-cat .env
-
-# Should show:
-VITE_API_URL=http://localhost:3000/api/v1
-VITE_WS_URL=http://localhost:3000
-```
-
-### View Backend Logs
-
-```bash
-cd backend
-docker-compose logs -f api
-```
-
----
-
-## Common Scenarios
-
-### Scenario 1: Fresh Setup (First Time)
-
-```bash
-# Terminal 1: Backend
-cd backend
-cp .env.example .env
-docker-compose up -d
-./scripts/create-test-accounts.sh
-
-# Terminal 2: Frontend
-cd ..
-npm install
-npm run dev
-```
-
-### Scenario 2: Backend Already Running
-
-```bash
-# Just start frontend
-npm run dev
-
-# Frontend will detect running backend
-# Login page shows: ✅ "Backend connected"
-```
-
-### Scenario 3: Backend Was Running, Now Stopped
-
-```bash
-# Restart backend
-cd backend
-docker-compose up -d
-
-# Refresh browser or click "Retry" button
-```
-
-### Scenario 4: Backend on Different Port
-
-```bash
-# Update .env in project root
-VITE_API_URL=http://localhost:3001/api/v1
-VITE_WS_URL=http://localhost:3001
-
-# Restart frontend dev server
-```
-
----
-
-## Testing the Fix
-
-### 1. With Backend Running
-
-```bash
-# Start backend
-cd backend
-docker-compose up -d
-```
-
-Open http://localhost:5173:
-- Should show: ✅ "Backend connected"
-- Demo login should work
-- No network errors
-
-### 2. With Backend Stopped
-
-```bash
-# Stop backend
-cd backend
+# 1. Stop all containers
 docker-compose down
-```
 
-Open http://localhost:5173:
-- Should show: 🔴 "Backend offline - Start backend server"
-- Red alert box with instructions
-- "Retry" button visible
-- Login buttons disabled
+# 2. Remove PostgreSQL volume (deletes all data!)
+docker volume rm cobt_postgres_data
 
-### 3. After Starting Backend
-
-```bash
-# Start backend
-cd backend
+# 3. Start fresh
 docker-compose up -d
-```
 
-On login page:
-- Click "Retry" button
-- Should change to: ✅ "Backend connected"
-- Login buttons enabled
-- Demo login works!
-
----
-
-## Error Messages Explained
-
-### "Network Error"
-- **Cause**: Backend not running or unreachable
-- **Fix**: Start backend with `docker-compose up -d`
-
-### "Cannot connect to server"
-- **Cause**: Wrong API URL or firewall blocking
-- **Fix**: Check `.env` has correct `VITE_API_URL`
-
-### "Session expired"
-- **Cause**: JWT token expired or invalid
-- **Fix**: Normal behavior, just login again
-
-### "Backend offline - Start backend server"
-- **Cause**: Health check failed
-- **Fix**: Start backend and click "Retry"
-
----
-
-## Port Configuration
-
-### Default Ports
-
-| Service    | Port  | URL                          |
-|------------|-------|------------------------------|
-| Frontend   | 5173  | http://localhost:5173        |
-| Backend    | 3000  | http://localhost:3000        |
-| PostgreSQL | 5432  | localhost:5432               |
-| Kafka      | 9092  | localhost:9092               |
-| Redis      | 6379  | localhost:6379               |
-
-### Change Ports (if needed)
-
-**Frontend** (.env):
-```bash
-VITE_PORT=5174
-```
-
-**Backend** (backend/.env):
-```bash
-PORT=3001
-```
-
-Then update frontend `.env`:
-```bash
-VITE_API_URL=http://localhost:3001/api/v1
-```
-
----
-
-## Pro Tips
-
-### 1. Keep Backend Logs Open
-
-```bash
-cd backend
-docker-compose logs -f api
-```
-
-This helps debug issues in real-time.
-
-### 2. Use Browser DevTools
-
-- **Network Tab**: See API requests/responses
-- **Console Tab**: Check for errors
-- **Application Tab**: View localStorage tokens
-
-### 3. Environment Variables
-
-Frontend env vars must start with `VITE_` to be available in the app.
-
-### 4. CORS Issues
-
-If you see CORS errors, check backend `.env`:
-```bash
-CORS_ORIGIN=http://localhost:5173
-```
-
----
-
-## Success Checklist
-
-- [ ] Backend running: `docker-compose ps` shows all services
-- [ ] Health check works: `curl http://localhost:3000/api/v1/health`
-- [ ] Test accounts created: `./scripts/create-test-accounts.sh`
-- [ ] Frontend running: http://localhost:5173 accessible
-- [ ] Status shows: ✅ "Backend connected"
-- [ ] Demo login works without errors
-- [ ] Can see dashboard after login
-
----
-
-## Still Having Issues?
-
-### Complete Reset
-
-```bash
-# Stop everything
-cd backend
-docker-compose down -v
-docker system prune -a
-
-# Start fresh
-docker-compose up -d
+# 4. Wait for services to start (30 seconds)
 sleep 30
-./scripts/create-test-accounts.sh
 
-# Restart frontend
-cd ..
-npm run dev
-```
+# 5. Create database
+docker exec -it cobt-postgres psql -U postgres -c "CREATE DATABASE cobt_user;"
+docker exec -it cobt-postgres psql -U postgres -d cobt_user -c "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";"
 
-### Check Docker
+# 6. Enable synchronize in TypeORM (in your backend code)
+# Set synchronize: true in database config
 
-```bash
-# Ensure Docker is running
-docker info
+# 7. Restart backend to auto-create tables
+docker-compose restart cobt-api
 
-# Check disk space
-docker system df
-
-# Clean up if needed
-docker system prune
-```
-
-### Verify Network
-
-```bash
-# Check if ports are accessible
-nc -zv localhost 3000
-nc -zv localhost 5173
-
-# Check firewall (Linux)
-sudo ufw status
-
-# Check firewall (Mac)
-sudo /usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate
+# 8. Insert demo users
+node create-demo-users.js
+# Then run the generated SQL file
 ```
 
 ---
 
-## Documentation Links
+## ✅ Verification Checklist
 
-- **Quick Start**: [GETTING_STARTED.md](./GETTING_STARTED.md)
-- **Backend Setup**: [BACKEND_SETUP.md](./BACKEND_SETUP.md)
-- **Full Integration**: [FRONTEND_INTEGRATION.md](./FRONTEND_INTEGRATION.md)
-- **API Testing**: [backend/API_TESTING.md](./backend/API_TESTING.md)
+After fixing, verify everything works:
+
+- [ ] Backend status shows "Online" (green)
+- [ ] `docker ps` shows all containers running
+- [ ] Database check shows 3 demo users
+- [ ] API curl test returns access token
+- [ ] Frontend login button is enabled
+- [ ] Demo login works and redirects to dashboard
 
 ---
 
-## Summary of Changes
+## 🎯 Quick Reference: Common Commands
 
-✅ **Added connection checking to login page**
-✅ **Visual status indicators (green/red/yellow)**
-✅ **Helpful error messages with API URL**
-✅ **Retry button for easy reconnection**
-✅ **Alert component with quick start commands**
-✅ **Better error handling in API client**
-✅ **Prevention of login when backend offline**
+```bash
+# Check database users
+docker exec -it cobt-postgres psql -U postgres -d cobt_user -c "SELECT email, role FROM users;"
 
-**The network error is now handled gracefully with clear user feedback!** 🎉
+# Check container status
+docker ps
+
+# Check backend logs
+docker logs --tail 50 cobt-api
+
+# Test API health
+curl https://your-ngrok-url/api/v1/health -H "ngrok-skip-browser-warning: true"
+
+# Generate password hash
+node -e "require('bcrypt').hash('Test123!', 10).then(console.log)"
+
+# Restart everything
+docker-compose restart
+```
+
+---
+
+## 📞 Still Not Working?
+
+If you've tried everything above:
+
+1. **Share these outputs:**
+   ```bash
+   docker ps
+   docker logs --tail 100 cobt-api
+   docker exec -it cobt-postgres psql -U postgres -d cobt_user -c "SELECT email, role, status FROM users;"
+   ```
+
+2. **Check environment variables:**
+   - Backend `.env` file has correct DB credentials
+   - Frontend has correct ngrok URL
+
+3. **Verify network connectivity:**
+   - Can containers talk to each other?
+   - Is ngrok tunnel active?
+
+---
+
+## 🎉 Success Indicators
+
+You'll know it's working when:
+- ✅ Backend status indicator is GREEN
+- ✅ Demo login buttons are ENABLED (not disabled)
+- ✅ Clicking "Demo Login as Traveller" redirects to traveller dashboard
+- ✅ You see user info in the top-right corner
+
+Good luck! 🚀

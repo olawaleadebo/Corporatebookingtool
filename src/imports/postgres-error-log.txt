@@ -1,0 +1,31 @@
+cobt-postgres   | 2026-03-05 16:12:15.590 UTC [274] ERROR:  relation "users" does not exist at character 666
+                                                                                                                 
+                                                                                                                 
+cobt-postgres   | 2026-03-05 16:12:15.590 UTC [274] STATEMENT:  SELECT "User"."id" AS "User_id", "User"."email" AS "User_email", "User"."password" AS "User_password", "User"."firstName" AS "User_firstName", "User"."lastName" AS "User_lastName", "User"."phoneNumber" AS "User_phoneNumber", "User"."role" AS "User_role", "User"."status" AS "User_status", "User"."companyId" AS "User_companyId", "User"."department" AS "User_department", "User"."costCenter" AS "User_costCenter", "User"."managerId" AS "User_managerId", "User"."metadata" AS "User_metadata", "User"."refreshToken" AS "User_refreshToken", "User"."createdAt" AS "User_createdAt", "User"."updatedAt" AS "User_updatedAt", "User"."lastLoginAt" AS "User_lastLoginAt" FROM "users" "User" WHERE (("User"."email" = $1)) LIMIT 1
+cobt-api        | 
+cobt-api        | 📨 Incoming Request:                                                                           
+cobt-api        |    Method: GET
+cobt-api        |    URL: /api/v1/health
+cobt-api        |    Origin: no-origin
+cobt-api        |    User-Agent: Wget...
+
+
+cobt-zookeeper  | [2026-03-05 16:12:17,924] INFO Unable to read additional data from client, it probably closed the socket: address = /0:0:0:0:0:0:0:1:33040, session = 0x0 (org.apache.zookeeper.server.NIOServerCnxn)
+cobt-api        |    ngrok-skip: undefined
+
+cobt-api        | ✅ Health check endpoint called - CORS is working!
+cobt-api        | 📊 Health check result: ok
+cobt-api        |    ✅ Response: 200
+cobt-api        | 🌍 CORS request from origin: https://1fe1b42d-af43-47be-b0be-3e94f508c0b6-v2-figmaiframepreview.figma.site
+cobt-api        | 🌍 CORS request from origin: https://1fe1b42d-af43-47be-b0be-3e94f508c0b6-v2-figmaiframepreview.figma.site                                                                                                      
+cobt-api        | 
+cobt-api        | 📨 Incoming Request:
+cobt-api        |    Method: POST
+cobt-api        |    URL: /api/v1/auth/register
+cobt-api        |    Origin: https://1fe1b42d-af43-47be-b0be-3e94f508c0b6-v2-figmaiframepreview.figma.site
+cobt-api        |    User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWeb...
+cobt-api        |    ngrok-skip: true
+cobt-api        |    ✅ Response: 500
+cobt-api        | 2026-03-05T16:12:15.595Z [ExceptionsHandler] error: relation "users" does not exist
+cobt-zookeeper  | [2026-03-05 16:12:28,161] INFO Unable to read additional data from client, it probably closed the socket: address = /0:0:0:0:0:0:0:1:40596, session = 0x0 (org.apache.zookeeper.server.NIOServerCnxn)
+cobt-zookeeper  | [2026-03-05 16:12:38,352] INFO Unable to read additional data from client, it probably closed the socket: address = /0:0:0:0:0:0:0:1:48220, session = 0x0 (org.apache.zookeeper.server.NIOServerCnxn)

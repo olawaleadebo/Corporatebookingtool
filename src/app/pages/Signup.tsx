@@ -1,13 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Plane } from 'lucide-react';
+import { Plane, CheckCircle2, AlertCircle, RefreshCw } from 'lucide-react';
 import { authService } from '../../services/auth.service';
 import { toast } from 'sonner';
+import api from '../../lib/api';
 
 export function Signup() {
   const navigate = useNavigate();
@@ -23,6 +24,29 @@ export function Signup() {
     costCenter: '',
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [backendStatus, setBackendStatus] = useState<'checking' | 'online' | 'offline'>('checking');
+  const [responseTime, setResponseTime] = useState<number | null>(null);
+
+  useEffect(() => {
+    checkBackendConnection();
+  }, []);
+
+  const checkBackendConnection = async () => {
+    setBackendStatus('checking');
+    setResponseTime(null);
+    const startTime = Date.now();
+    
+    try {
+      // Use the /health endpoint which exists on the backend
+      await api.get('/health');
+      const endTime = Date.now();
+      setResponseTime(endTime - startTime);
+      setBackendStatus('online');
+    } catch (error) {
+      setBackendStatus('offline');
+      setResponseTime(null);
+    }
+  };
 
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -113,6 +137,54 @@ export function Signup() {
           <h1 className="text-4xl font-bold text-white mb-2 drop-shadow-lg">BTMTravel COBT</h1>
           <p className="text-white/90 text-lg drop-shadow">Corporate Booking Tool</p>
         </div>
+
+        {/* Backend Connection Status */}
+        <Card className="mb-4 border-gray-200 bg-white/95 shadow-lg">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {backendStatus === 'checking' && (
+                  <>
+                    <RefreshCw className="w-5 h-5 text-yellow-500 animate-spin" />
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">Checking connection...</p>
+                      <p className="text-xs text-gray-500">Testing backend server</p>
+                    </div>
+                  </>
+                )}
+                {backendStatus === 'online' && (
+                  <>
+                    <CheckCircle2 className="w-5 h-5 text-green-500" />
+                    <div>
+                      <p className="text-sm font-medium text-green-600">Backend Online</p>
+                      <p className="text-xs text-gray-500">
+                        Response time: {responseTime}ms
+                      </p>
+                    </div>
+                  </>
+                )}
+                {backendStatus === 'offline' && (
+                  <>
+                    <AlertCircle className="w-5 h-5 text-red-500" />
+                    <div>
+                      <p className="text-sm font-medium text-red-600">Backend Offline</p>
+                      <p className="text-xs text-gray-500">Cannot connect to server</p>
+                    </div>
+                  </>
+                )}
+              </div>
+              <Button
+                onClick={checkBackendConnection}
+                variant="outline"
+                size="sm"
+                className="text-xs"
+                disabled={backendStatus === 'checking'}
+              >
+                Retest
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Signup Card */}
         <Card className="border-gray-200 bg-white shadow-2xl">

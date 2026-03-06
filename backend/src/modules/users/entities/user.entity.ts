@@ -8,9 +8,8 @@ import {
   Index,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
-import { Booking } from '@/modules/booking/entities/booking.entity';
-import { Payment } from '@/modules/payment/entities/payment.entity';
-
+import { Booking } from '../booking/entities/booking.entity';
+import { Payment } from '../payment/entities/payment.entity';
 
 export enum UserRole {
   TRAVELLER = 'traveller',
@@ -78,12 +77,9 @@ export class User {
   @Column({ type: 'jsonb', nullable: true })
   metadata: Record<string, any>;
 
-  // @Column({ nullable: true })
-  // @Exclude()
-  // refreshToken: string | any;
-
-  @Column({ type: 'text', nullable: true })
-  refreshToken?: string;
+  @Column({ nullable: true })
+  @Exclude()
+  refreshToken: string | null;
 
   @CreateDateColumn()
   createdAt: Date;

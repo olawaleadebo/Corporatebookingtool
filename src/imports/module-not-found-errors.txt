@@ -1,0 +1,124 @@
+Error: Cannot find module 'C:\Users\DELL\OneDrive\Desktop\cobt\Corporatebookingt
+ool\generate-password-hash.js'
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1456:15)       
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1066:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1071:22)        
+    at Module._load (node:internal/modules/cjs/loader:1242:25)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main
+:154:5)
+    at node:internal/main/run_main_module:33:47 {
+    at node:internal/main/run_main_module:33:47 {
+  code: 'MODULE_NOT_FOUND',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+}
+
+Node.js v24.14.0
+
+DELL@WALE-ADEBOWALE MINGW64 ~/OneDrive/Desktop/cobt/Corporatebookingtool/backend (main)
+$ # Copy file to container
+docker cp database-setup.sql cobt-postgres:/tmp/setup.sql
+
+# Execute it
+docker exec -it cobt-postgres psql -U postgres -d cobt_user -f /tmp/setup.sql
+GetFileAttributesEx C:\Users\DELL\OneDrive\Desktop\cobt\Corporatebookingtool\backend\database-setup.sql: The system cannot find the file specified.
+psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: FATAL:  role "postgres" does not exist
+
+DELL@WALE-ADEBOWALE MINGW64 ~/OneDrive/Desktop/cobt/Corporatebookingtool/backend (main)
+$ node create-demo-users.js
+node:internal/modules/cjs/loader:1459
+  throw err;
+  ^
+
+Error: Cannot find module 'C:\Users\DELL\OneDrive\Deskto
+p\cobt\Corporatebookingtool\backend\create-demo-users.js
+'
+    at Module._resolveFilename (node:internal/modules/cj
+s/loader:1456:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loa
+der:1066:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs
+/loader:1071:22)
+    at Module._load (node:internal/modules/cjs/loader:12
+42:25)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:
+255:19)
+    at Module.executeUserEntryPoint [as runMain] (node:i
+nternal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {       
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+
+Node.js v24.14.0
+
+DELL@WALE-ADEBOWALE MINGW64 ~/OneDrive/Desktop/cobt/Corporatebookingtool/backend (main)
+$ docker cp working-demo-users.sql cobt-postgres:/tmp/working-demo-users.sql
+GetFileAttributesEx C:\Users\DELL\OneDrive\Desktop\cobt\Corporatebookingtool\backend\working-demo-users.sql: The system cannot find the file specified.
+
+DELL@WALE-ADEBOWALE MINGW64 ~/OneDrive/Desktop/cobt/Corporatebookingtool/backend (main)
+$ docker exec -it cobt-postgres psql -U postgres -f /tmp/working-demo-users.sql
+psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: FATAL:  role "postgres" does not exist
+
+DELL@WALE-ADEBOWALE MINGW64 ~/OneDrive/Desktop/cobt/Corporatebookingtool/backend (main)
+DELL@WALE-ADEBOWALE MINGW64 ~/OneDrive/Desktop/cobt/Corporatebookingtool/backend (main)
+$ npm install bcrypt
+
+up to date, audited 736 packages in 12s
+
+145 packages are looking for funding
+  run `npm fund` for details
+
+36 vulnerabilities (4 low, 11 moderate, 19 high, 2 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues possible (including breaking changes), run:
+  npm audit fix --force
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+
+DELL@WALE-ADEBOWALE MINGW64 ~/OneDrive/Desktop/cobt/Corporatebookingtool/backend (main)
+$ node create-demo-users.js
+node:internal/modules/cjs/loader:1459
+  throw err;
+  ^
+
+Error: Cannot find module 'C:\Users\DELL\OneDrive\Desktop\cobt\Corporatebookingtool\backend\create-
+demo-users.js'
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1456:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1066:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1071:22)
+    at Module._load (node:internal/modules/cjs/loader:1242:25)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+
+Node.js v24.14.0
+
+DELL@WALE-ADEBOWALE MINGW64 ~/OneDrive/Desktop/cobt/Corporatebookingtool/backend (main)
+$ cat docker-compose.yml | grep POSTGRES_USER
+      POSTGRES_USER: cobt_user
+
+DELL@WALE-ADEBOWALE MINGW64 ~/OneDrive/Desktop/cobt/Corporatebookingtool/backend (main)
+$ docker cp working-demo-users.sql cobt-postgres:/tmp/working-demo-users.sql
+GetFileAttributesEx C:\Users\DELL\OneDrive\Desktop\cobt\Corporatebookingtool\backend\working-demo-users.sql: The system cannot find the file specified.
+
+DELL@WALE-ADEBOWALE MINGW64 ~/OneDrive/Desktop/cobt/Corporatebookingtool/backend (main)
+$ docker exec -it cobt-postgres psql -U root -f /tmp/working-demo-users.sql
+psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: FATAL:  role "root" does not exist
+
+DELL@WALE-ADEBOWALE MINGW64 ~/OneDrive/Desktop/cobt/Corporatebookingtool/backend (main)
+$
