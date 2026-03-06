@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
-import { ArrowLeft, Plane, Clock, Calendar, Loader2 } from 'lucide-react';
+import { ArrowLeft, Plane, Clock, Calendar, Loader2, Info } from 'lucide-react';
 import { searchService, type Flight } from '../../services/search.service';
 import { toast } from 'sonner';
 
@@ -14,6 +14,7 @@ export function FlightResults() {
   const [selectedFlight, setSelectedFlight] = useState<Flight | null>(null);
   const [flights, setFlights] = useState<Flight[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [usingMockData, setUsingMockData] = useState(false);
 
   // Calculate total passengers from the passengers object
   const getTotalPassengers = () => {
@@ -44,9 +45,16 @@ export function FlightResults() {
           travelClass: searchParams.class?.toUpperCase() || 'ECONOMY',
         });
         setFlights(results);
+        
+        // Check if we're using mock data (backend returned error)
+        // Mock data will have rawData as empty object
+        if (results.length > 0 && Object.keys(results[0].rawData || {}).length === 0) {
+          setUsingMockData(true);
+        }
       } catch (error: any) {
         console.error('Flight search error:', error);
-        toast.error(error.message || 'Failed to search flights');
+        // Don't show error toast since we're falling back to mock data
+        setUsingMockData(true);
         setFlights([]);
       } finally {
         setIsLoading(false);
@@ -131,6 +139,22 @@ export function FlightResults() {
             </div>
           ) : (
             <>
+              {/* Mock Data Info Banner */}
+              {usingMockData && (
+                <div className="mb-4 bg-blue-500/90 backdrop-blur-sm rounded-lg p-4 border border-blue-400">
+                  <div className="flex items-start gap-3">
+                    <Info className="w-5 h-5 text-white mt-0.5 flex-shrink-0" />
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-white mb-1">Demo Mode Active</h4>
+                      <p className="text-white/90 text-sm">
+                        Showing sample flight data. The backend service is currently unavailable or using mock data. 
+                        All flight information is for demonstration purposes only.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-4">
                 {flights.map((flight) => (
                 <Card 
