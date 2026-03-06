@@ -30,7 +30,7 @@ const UserSchema = new Schema<IUser>(
       unique: true,
       lowercase: true,
       trim: true,
-      index: true,
+      // Removed: index: true (duplicate with line 86)
     },
     password: {
       type: String,

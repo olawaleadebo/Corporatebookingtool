@@ -97,13 +97,13 @@ const BookingSchema = new Schema<IBooking>(
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
-      index: true,
+      // Removed: index: true (duplicate with line 211)
     },
     bookingReference: {
       type: String,
       required: true,
       unique: true,
-      index: true,
+      // Removed: index: true (duplicate with line 212)
     },
     type: {
       type: String,

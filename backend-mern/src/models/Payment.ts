@@ -36,13 +36,13 @@ const PaymentSchema = new Schema<IPayment>(
       type: Schema.Types.ObjectId,
       ref: 'Booking',
       required: true,
-      index: true,
+      // Removed: index: true (duplicate with line 83)
     },
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
-      index: true,
+      // Removed: index: true (duplicate with line 84)
     },
     amount: {
       type: Number,
@@ -64,6 +64,7 @@ const PaymentSchema = new Schema<IPayment>(
       type: String,
       unique: true,
       sparse: true,
+      // Removed: index will be created automatically by unique
     },
     paystackAccessCode: String,
     paystackAuthorizationUrl: String,
