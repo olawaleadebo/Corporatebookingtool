@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router';
+import { useState, useEffect } from 'react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
@@ -11,9 +12,21 @@ import {
   LogOut,
   User
 } from 'lucide-react';
+import { authService, type User as UserType } from '../../services/auth.service';
 
 export function TravelArrangerDashboard() {
   const navigate = useNavigate();
+  const [currentUser, setCurrentUser] = useState<UserType | null>(null);
+
+  useEffect(() => {
+    const user = authService.getCurrentUser();
+    if (user) {
+      setCurrentUser(user);
+    } else {
+      // If no user is found, redirect to login
+      navigate('/');
+    }
+  }, [navigate]);
 
   const pendingRequests = [
     { id: 1, traveller: 'John Doe', type: 'Flight', destination: 'Lagos to London', amount: '₦485,000', date: '2026-03-15', priority: 'high' },
@@ -51,7 +64,9 @@ export function TravelArrangerDashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome back, Jane!</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">
+            Welcome back{currentUser ? `, ${currentUser.firstName}` : ''}!
+          </h2>
           <p className="text-gray-600">Review and manage travel booking requests</p>
         </div>
 

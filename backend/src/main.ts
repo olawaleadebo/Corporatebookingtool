@@ -4,7 +4,8 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { WINSTON_MODULE_NEST_PROVIDER, WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { AllExceptionsFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -13,6 +14,10 @@ async function bootstrap() {
 
   // Use Winston logger
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
+
+  // Apply global exception filter
+  const logger = app.get(WINSTON_MODULE_PROVIDER);
+  app.useGlobalFilters(new AllExceptionsFilter(logger));
 
   const configService = app.get(ConfigService);
 

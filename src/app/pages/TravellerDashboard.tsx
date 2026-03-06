@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router';
+import { useState, useEffect } from 'react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
@@ -14,9 +15,21 @@ import {
   AlertCircle,
   LogOut
 } from 'lucide-react';
+import { authService, type User } from '../../services/auth.service';
 
 export function TravellerDashboard() {
   const navigate = useNavigate();
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const user = authService.getCurrentUser();
+    if (user) {
+      setCurrentUser(user);
+    } else {
+      // If no user is found, redirect to login
+      navigate('/');
+    }
+  }, [navigate]);
 
   const recentBookings = [
     {
@@ -101,7 +114,9 @@ export function TravellerDashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome back, John!</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">
+            Welcome back{currentUser ? `, ${currentUser.firstName}` : ''}!
+          </h2>
           <p className="text-gray-600">Ready to plan your next business trip?</p>
         </div>
 

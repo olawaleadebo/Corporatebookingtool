@@ -11,11 +11,31 @@ export class SearchService {
   ) {}
 
   async searchFlights(params: any) {
-    return this.amadeusService.searchFlights(params);
+    try {
+      return await this.amadeusService.searchFlights(params);
+    } catch (error) {
+      this.logger.error('Search service flight search error', {
+        context: 'SearchService',
+        error: error.message,
+        params,
+      });
+      // Return empty array as final fallback
+      return [];
+    }
   }
 
   async searchHotels(params: any) {
-    return this.amadeusService.searchHotels(params);
+    try {
+      return await this.amadeusService.searchHotels(params);
+    } catch (error) {
+      this.logger.error('Search service hotel search error', {
+        context: 'SearchService',
+        error: error.message,
+        params,
+      });
+      // Return empty array as final fallback
+      return [];
+    }
   }
 
   async validateFlightAvailability(flightDetails: any) {

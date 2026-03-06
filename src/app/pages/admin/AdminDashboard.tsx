@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router';
+import { useState, useEffect } from 'react';
 import { AdminLayout } from '../../components/layouts/AdminLayout';
 import { Button } from '../../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
@@ -17,9 +18,21 @@ import {
   CheckCircle,
   Clock
 } from 'lucide-react';
+import { authService, type User } from '../../../services/auth.service';
 
 export function AdminDashboard() {
   const navigate = useNavigate();
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const user = authService.getCurrentUser();
+    if (user) {
+      setCurrentUser(user);
+    } else {
+      // If no user is found, redirect to login
+      navigate('/');
+    }
+  }, [navigate]);
 
   const stats = [
     { label: 'Total Users', value: '248', change: '+12%', icon: Users, color: 'text-blue-600' },
@@ -50,7 +63,9 @@ export function AdminDashboard() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Dashboard Overview</h1>
-              <p className="text-sm text-gray-600 mt-1">Welcome back! Here's what's happening today.</p>
+              <p className="text-sm text-gray-600 mt-1">
+                Welcome back{currentUser ? `, ${currentUser.firstName}` : ''}! Here's what's happening today.
+              </p>
             </div>
           </div>
         </div>

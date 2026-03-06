@@ -5,12 +5,23 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('search')
 @Controller('search')
-@UseGuards(JwtAuthGuard)
-@ApiBearerAuth()
 export class SearchController {
   constructor(private readonly searchService: SearchService) {}
 
+  @Get('health')
+  @ApiOperation({ summary: 'Health check for search service' })
+  @ApiResponse({ status: 200, description: 'Returns service status' })
+  getHealth() {
+    return {
+      status: 'ok',
+      service: 'search',
+      timestamp: new Date().toISOString(),
+    };
+  }
+
   @Get('flights')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Search for flights' })
   @ApiResponse({ status: 200, description: 'Returns flight search results' })
   @ApiQuery({ name: 'origin', required: true, example: 'LOS' })
@@ -19,7 +30,7 @@ export class SearchController {
   @ApiQuery({ name: 'returnDate', required: false, example: '2026-04-22' })
   @ApiQuery({ name: 'adults', required: false, example: 1 })
   @ApiQuery({ name: 'travelClass', required: false, example: 'ECONOMY' })
-  searchFlights(
+  async searchFlights(
     @Query('origin') origin: string,
     @Query('destination') destination: string,
     @Query('departureDate') departureDate: string,
@@ -27,7 +38,7 @@ export class SearchController {
     @Query('adults') adults: number = 1,
     @Query('travelClass') travelClass?: string,
   ) {
-    return this.searchService.searchFlights({
+    return await this.searchService.searchFlights({
       origin,
       destination,
       departureDate,
@@ -38,19 +49,21 @@ export class SearchController {
   }
 
   @Get('hotels')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Search for hotels' })
   @ApiResponse({ status: 200, description: 'Returns hotel search results' })
   @ApiQuery({ name: 'cityCode', required: true, example: 'LON' })
   @ApiQuery({ name: 'checkInDate', required: true, example: '2026-04-15' })
   @ApiQuery({ name: 'checkOutDate', required: true, example: '2026-04-22' })
   @ApiQuery({ name: 'adults', required: false, example: 1 })
-  searchHotels(
+  async searchHotels(
     @Query('cityCode') cityCode: string,
     @Query('checkInDate') checkInDate: string,
     @Query('checkOutDate') checkOutDate: string,
     @Query('adults') adults: number = 1,
   ) {
-    return this.searchService.searchHotels({
+    return await this.searchService.searchHotels({
       cityCode,
       checkInDate,
       checkOutDate,
